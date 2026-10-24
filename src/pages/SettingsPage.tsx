@@ -14,6 +14,7 @@ import {
   Lock,
   LogOut,
   Mail,
+  Paintbrush,
   Palette,
   RefreshCw,
   Shield,
@@ -26,6 +27,7 @@ import {
 import AuthModal from '@/components/AuthModal'
 import PageHeader from '@/components/PageHeader'
 import PinSetupModal from '@/components/PinSetupModal'
+import ThemeEditorModal from '@/components/theme-editor/ThemeEditorModal'
 import { ROUTES } from '@/constants/app'
 import { useAuth } from '@/context/useAuth'
 import { useTheme } from '@/context/useTheme'
@@ -51,30 +53,10 @@ export default function SettingsPage() {
 
   // Cloud Auth & Sync
   const { user, isSyncing, lastSyncedAt, syncData, logout } = useAuth()
-  const { theme, setTheme } = useTheme()
-  const [isDark, setIsDark] = useState(() => {
-    return document.documentElement.classList.contains('dark') ||
-      localStorage.getItem('junhi_theme') === 'dark'
-  })
+  const { theme, setTheme, setIsEditorOpen, isDark, setIsDark } = useTheme()
 
   const handleToggleDark = (dark: boolean) => {
     setIsDark(dark)
-    const metaTheme = document.querySelector('meta[name="theme-color"]')
-    if (dark) {
-      document.documentElement.classList.add('dark')
-      document.documentElement.setAttribute('data-theme', 'dark')
-      document.body.classList.add('dark')
-      document.body.setAttribute('data-theme', 'dark')
-      if (metaTheme) metaTheme.setAttribute('content', '#1A1715')
-      localStorage.setItem('junhi_theme', 'dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-      document.documentElement.setAttribute('data-theme', 'light')
-      document.body.classList.remove('dark')
-      document.body.setAttribute('data-theme', 'light')
-      if (metaTheme) metaTheme.setAttribute('content', '#F3F1EC')
-      localStorage.setItem('junhi_theme', 'light')
-    }
   }
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
@@ -227,8 +209,8 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* 7. Thẻ chọn theme: nền var(--surface-2), thẻ đang chọn viền var(--accent) dày 2px kèm dấu ✓, thẻ chưa chọn viền var(--border), chữ mô tả dùng var(--text-muted) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          {/* 7. Thẻ chọn theme: Hiện đại, Retro Win95, Tùy chỉnh (Custom) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
             {/* Chế độ Hiện đại */}
             <button
               type="button"
@@ -272,12 +254,45 @@ export default function SettingsPage() {
                 <span className="text-sm">🎨</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <p className="text-sm font-bold text-[var(--text)]">Retro Win95 / Paint</p>
+                <p className="text-sm font-bold text-[var(--text)]">Retro Win95</p>
                 <span className="rounded bg-[var(--pastel-butter)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--accent-contrast)]">Y2K</span>
               </div>
               <p className="mt-1 text-xs text-[var(--text-muted)] leading-relaxed">
                 Phong cách Windows 95, bảng màu MS Paint hoài niệm với chú ếch và cá vàng.
               </p>
+            </button>
+
+            {/* Chế độ Tùy chỉnh (Custom) */}
+            <button
+              type="button"
+              onClick={() => {
+                setTheme('custom')
+                setIsEditorOpen(true)
+              }}
+              className={`relative flex flex-col items-start rounded-2xl p-4 text-left transition-all bg-[var(--surface-2)] ${
+                theme === 'custom'
+                  ? 'border-2 border-[var(--accent)] shadow-sm'
+                  : 'border border-[var(--border)] hover:border-[var(--border-strong)]'
+              }`}
+            >
+              {theme === 'custom' && (
+                <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-contrast)] text-xs font-bold shadow-xs">
+                  ✓
+                </span>
+              )}
+              <div className="mb-2 flex size-8 items-center justify-center rounded-xl bg-[var(--accent)] text-[var(--accent-contrast)] shadow-xs">
+                <Paintbrush size={16} />
+              </div>
+              <div className="flex items-center gap-1.5">
+                <p className="text-sm font-bold text-[var(--text)]">Tùy chỉnh (Custom)</p>
+                <span className="rounded bg-[var(--accent)]/15 px-1.5 py-0.5 text-[10px] font-bold text-[var(--accent)]">Studio</span>
+              </div>
+              <p className="mt-1 text-xs text-[var(--text-muted)] leading-relaxed">
+                Tự phối màu, chọn 10+ font chữ, viền bóng và mật độ theo phong cách riêng của bạn.
+              </p>
+              <span className="mt-2 text-[11px] font-semibold text-[var(--accent)] hover:underline inline-flex items-center gap-1">
+                Mở Studio tùy biến →
+              </span>
             </button>
           </div>
 
@@ -723,6 +738,8 @@ export default function SettingsPage() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
       />
+
+      <ThemeEditorModal />
     </>
   )
 }

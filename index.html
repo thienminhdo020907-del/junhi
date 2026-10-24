@@ -17,17 +17,48 @@
     <script>
       (function () {
         try {
-          var saved = localStorage.getItem('junhi_theme')
-          var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          var savedDark = localStorage.getItem('junhi_theme')
+          var themeMode = localStorage.getItem('junhi_theme_mode') || 'modern'
+          var isDark = savedDark === 'dark' || (!savedDark && window.matchMedia('(prefers-color-scheme: dark)').matches)
           var metaTheme = document.querySelector('meta[name="theme-color"]')
-          if (theme === 'dark') {
-            document.documentElement.classList.add('dark')
-            document.documentElement.setAttribute('data-theme', 'dark')
-            if (metaTheme) metaTheme.setAttribute('content', '#1F1C1A')
+          var root = document.documentElement
+
+          if (isDark) {
+            root.classList.add('dark')
+            root.setAttribute('data-theme', 'dark')
+            if (metaTheme) metaTheme.setAttribute('content', '#1A1715')
           } else {
-            document.documentElement.classList.remove('dark')
-            document.documentElement.setAttribute('data-theme', 'light')
+            root.classList.remove('dark')
+            root.setAttribute('data-theme', 'light')
             if (metaTheme) metaTheme.setAttribute('content', '#F3F1EC')
+          }
+
+          if (themeMode === 'win95') {
+            root.classList.add('theme-win95')
+          }
+
+          var rawConfig = localStorage.getItem('junhi_custom_theme_config')
+          if (rawConfig && themeMode === 'custom') {
+            var cfg = JSON.parse(rawConfig)
+            if (cfg && cfg.version === 1) {
+              var colors = isDark ? cfg.dark : cfg.light
+              if (colors) {
+                root.style.setProperty('--bg', colors.bg)
+                root.style.setProperty('--surface', colors.surface)
+                root.style.setProperty('--surface-2', colors.surface2)
+                root.style.setProperty('--text', colors.text)
+                root.style.setProperty('--text-muted', colors.textMuted)
+                root.style.setProperty('--border', colors.border)
+                root.style.setProperty('--border-strong', colors.borderStrong)
+                root.style.setProperty('--accent', colors.accent)
+                root.style.setProperty('--accent-contrast', colors.accentContrast)
+                if (metaTheme) metaTheme.setAttribute('content', colors.bg)
+              }
+              if (cfg.fontHeading) root.style.setProperty('--font-heading', cfg.fontHeading)
+              if (cfg.fontBody) root.style.setProperty('--font-body', cfg.fontBody)
+              if (cfg.fontSizeBase) root.style.setProperty('--font-size-base', cfg.fontSizeBase + 'px')
+              if (cfg.lineHeight) root.style.setProperty('--line-height', String(cfg.lineHeight))
+            }
           }
         } catch (e) {}
       })()
