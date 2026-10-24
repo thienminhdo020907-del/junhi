@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Bar,
   BarChart,
@@ -14,8 +15,10 @@ import {
 import { BarChart3, Flame, Trophy } from 'lucide-react'
 import EmptyState from '@/components/EmptyState'
 import PageHeader from '@/components/PageHeader'
+import YearView from '@/pages/calendar/YearView'
 import { ROUTES } from '@/constants/app'
 import { useAllEntries } from '@/db/useEntries'
+import { toKey } from '@/lib/date'
 import {
   monthlyAverages,
   streaks,
@@ -177,6 +180,7 @@ function TagList({
 }
 
 export default function StatsPage() {
+  const navigate = useNavigate()
   const entries = useAllEntries()
   const [today] = useState(() => new Date())
   const [range, setRange] = useState<'week' | 'month'>('week')
@@ -271,6 +275,12 @@ export default function StatsPage() {
             </p>
           )}
         </Section>
+
+        {/* Khung Heatmap năm có tính năng phóng to (Life in weeks) */}
+        <div className="lg:col-span-2">
+          <h2 className="mb-2 text-sm font-semibold text-[var(--text)]">Bản đồ cảm xúc cả năm (Heatmap)</h2>
+          <YearView date={today} onOpenDay={(d) => navigate(`/lich?ngay=${toKey(d)}`)} />
+        </div>
 
         <Section title="Tag đi cùng tâm trạng" className="lg:col-span-2">
           <div className="grid gap-6 lg:grid-cols-2">

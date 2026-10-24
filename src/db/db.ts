@@ -30,9 +30,24 @@ export interface Setting {
   value: unknown
 }
 
+export type MilestoneType = 'personal' | 'work' | 'health' | 'travel' | 'study' | 'other'
+
+export interface Milestone {
+  id: string
+  date: string // YYYY-MM-DD
+  emoji: string
+  title: string
+  type: MilestoneType
+  note?: string
+  repeatYearly?: boolean
+  createdAt: number
+  updatedAt: number
+}
+
 class JunhiDB extends Dexie {
   entries!: EntityTable<Entry, 'id'>
   settings!: EntityTable<Setting, 'key'>
+  milestones!: EntityTable<Milestone, 'id'>
 
   constructor() {
     super('junhi')
@@ -55,6 +70,11 @@ class JunhiDB extends Dexie {
             e.sleepHours ??= null
           }),
       )
+    this.version(3).stores({
+      entries: '++id, &date, mood, updatedAt, *tags',
+      settings: 'key',
+      milestones: 'id, date, type, repeatYearly, createdAt',
+    })
   }
 }
 
