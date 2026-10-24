@@ -168,17 +168,17 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
       {/* Cột trái: Mood 5 khuôn mặt vẽ tay + Cảm xúc + Sức khỏe */}
       <div className="space-y-6">
         {/* Khung chọn 5 khuôn mặt vẽ tay */}
-        <section className="relative rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-6 shadow-[2px_3px_0px_rgba(43,39,36,0.06)] dark:border-white/20 dark:bg-[#282421]">
+        <section className="relative rounded-3xl border-[1.5px] border-[var(--border)] bg-[var(--surface)] p-6 shadow-[2px_3px_0px_rgba(0,0,0,0.05)]">
           {/* Miếng washi tape hồng trang trí */}
           <div className="absolute -top-2 left-8">
-            <DoodleWashiTape color="#F4C6D0" />
+            <DoodleWashiTape color="var(--pastel-pink)" />
           </div>
 
           <div className="mb-4 flex items-center justify-between">
-            <p className="font-serif text-lg italic text-[#2B2724] dark:text-[#EDE8E3]">
+            <p className="font-serif text-lg italic text-[var(--text)]">
               Hôm nay tâm trạng bạn thế nào? ✿
             </p>
-            <span className="font-mono text-[10px] tracking-widest text-[#7A736B] dark:text-[#A8A199] uppercase">
+            <span className="font-mono text-[10px] tracking-widest text-[var(--text-muted)] uppercase">
               1 — 5 MOOD
             </span>
           </div>
@@ -202,10 +202,10 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
                   transition={COZY_SPRING}
                   className={`group relative flex aspect-square flex-col items-center justify-center rounded-2xl border-[1.5px] transition-all p-1 ${
                     selected
-                      ? 'border-[#2B2724] shadow-[2px_3px_0px_#2B2724] dark:border-white'
-                      : 'border-[#2B2724]/20 opacity-70 hover:opacity-100 hover:border-[#2B2724] dark:border-white/20'
+                      ? 'border-[var(--border-strong)] shadow-[2px_3px_0px_var(--border-strong)]'
+                      : 'border-[var(--border)] opacity-70 hover:opacity-100 hover:border-[var(--border-strong)]'
                   }`}
-                  style={{ backgroundColor: selected ? moodColor(m) : '#FBFAF7' }}
+                  style={{ backgroundColor: selected ? moodColor(m) : 'var(--surface)' }}
                 >
                   <div className="transition-transform group-hover:scale-105">
                     {renderDoodleMood(m)}
@@ -216,14 +216,14 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
           </div>
 
           {/* Nhãn tâm trạng cảm xúc */}
-          <p className="mt-4 h-6 text-center font-serif text-base italic text-[#2B2724] dark:text-[#EDE8E3]">
+          <p className="mt-4 h-6 text-center font-serif text-base italic text-[var(--text)]">
             {mood ? (
               <span className="inline-flex items-center gap-1.5">
-                <Sparkles size={14} className="text-[#F2B58B]" />
+                <Sparkles size={14} className="text-[var(--mood-2)]" />
                 {MOOD_LABEL[mood]}
               </span>
             ) : (
-              <span className="text-[#7A736B] dark:text-[#A8A199] font-sans text-xs">
+              <span className="text-[var(--text-muted)] font-sans text-xs">
                 chạm vào một khuôn mặt vẽ tay để bắt đầu ghi nha
               </span>
             )}
@@ -231,12 +231,12 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
         </section>
 
         {/* Khung thẻ cảm xúc nổi bật (Pill Tags) */}
-        <section className="relative rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-6 shadow-[2px_3px_0px_rgba(43,39,36,0.06)] dark:border-white/20 dark:bg-[#282421]">
+        <section className="relative rounded-3xl border-[1.5px] border-[var(--border)] bg-[var(--surface)] p-6 shadow-[2px_3px_0px_rgba(0,0,0,0.05)]">
           <div className="mb-3 flex items-center justify-between">
-            <p className="font-serif text-lg italic text-[#2B2724] dark:text-[#EDE8E3]">
+            <p className="font-serif text-lg italic text-[var(--text)]">
               Cảm xúc nổi bật 🍃
             </p>
-            <span className="font-mono text-[10px] tracking-widest text-[#7A736B] dark:text-[#A8A199] uppercase">
+            <span className="font-mono text-[10px] tracking-widest text-[var(--text-muted)] uppercase">
               TAGS
             </span>
           </div>
@@ -252,8 +252,8 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
                   onClick={() => toggleTag(t)}
                   className={`rounded-full border-[1.5px] px-3.5 py-1.5 text-xs sm:text-sm font-sans transition-all hover:-translate-y-0.5 ${
                     on
-                      ? 'border-[#2B2724] bg-[#CFE3DD] text-[#2B2724] font-medium shadow-[1.5px_2px_0px_#2B2724] dark:border-white/50'
-                      : 'border-[#2B2724]/20 bg-[#FBFAF7] text-[#7A736B] hover:border-[#2B2724] dark:border-white/20 dark:bg-[#282421] dark:text-[#A8A199]'
+                      ? 'border-[var(--border-strong)] bg-[var(--pastel-mint)] text-[var(--text)] font-medium shadow-[1.5px_2px_0px_var(--border-strong)]'
+                      : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]'
                   }`}
                 >
                   {t}
@@ -264,13 +264,13 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
         </section>
 
         {/* Mức năng lượng */}
-        <section className="relative rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-6 shadow-[2px_3px_0px_rgba(43,39,36,0.06)] dark:border-white/20 dark:bg-[#282421]">
+        <section className="relative rounded-3xl border-[1.5px] border-[var(--border)] bg-[var(--surface)] p-6 shadow-[2px_3px_0px_rgba(0,0,0,0.05)]">
           <div className="mb-3 flex items-center justify-between">
-            <p className="font-serif text-lg italic text-[#2B2724] dark:text-[#EDE8E3]">
+            <p className="font-serif text-lg italic text-[var(--text)]">
               Mức năng lượng cơ thể ⚡
             </p>
             {energy && (
-              <span className="font-sans text-xs font-medium text-[#7A736B] dark:text-[#A8A199]">
+              <span className="font-sans text-xs font-medium text-[var(--text-muted)]">
                 {ENERGY_LABEL[energy]}
               </span>
             )}
@@ -292,8 +292,8 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
                   }}
                   className={`rounded-2xl border-[1.5px] py-2.5 text-xs sm:text-sm font-mono font-bold transition-all hover:-translate-y-0.5 ${
                     isSelected
-                      ? 'border-[#2B2724] bg-[#F6E3A8] text-[#2B2724] shadow-[2px_2px_0px_#2B2724]'
-                      : 'border-[#2B2724]/20 bg-[#FBFAF7] text-[#7A736B] hover:border-[#2B2724] dark:border-white/20 dark:bg-[#282421] dark:text-[#A8A199]'
+                      ? 'border-[var(--border-strong)] bg-[var(--pastel-butter)] text-[var(--text)] shadow-[2px_2px_0px_var(--border-strong)]'
+                      : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]'
                   }`}
                 >
                   {n}
@@ -322,21 +322,21 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
               : { scale: 1, rotate: 0 }
           }
           transition={COZY_SPRING}
-          className="relative flex min-h-[460px] flex-col rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-6 shadow-[3px_4px_0px_rgba(43,39,36,0.06)] dark:border-white/20 dark:bg-[#282421]"
+          className="relative flex min-h-[460px] flex-col rounded-3xl border-[1.5px] border-[var(--border)] bg-[var(--surface)] p-6 shadow-[3px_4px_0px_rgba(0,0,0,0.05)]"
         >
           {/* Miếng washi tape vàng ở đầu trang giấy */}
           <div className="absolute -top-2 right-12">
-            <DoodleWashiTape color="#F6E3A8" />
+            <DoodleWashiTape color="var(--pastel-butter)" />
           </div>
 
-          <div className="mb-4 flex items-center justify-between border-b border-[#2B2724]/10 pb-3 dark:border-white/10">
+          <div className="mb-4 flex items-center justify-between border-b border-[var(--border)] pb-3">
             <div className="flex items-center gap-2">
-              <DoodleFlower size={18} className="text-[#F4C6D0]" />
-              <label htmlFor="content" className="font-serif text-xl italic text-[#2B2724] dark:text-[#EDE8E3]">
+              <DoodleFlower size={18} className="text-[var(--pastel-pink)]" />
+              <label htmlFor="content" className="font-serif text-xl italic text-[var(--text)]">
                 Trang nhật ký hôm nay
               </label>
             </div>
-            <div className="font-mono text-[10px] tracking-wider text-[#7A736B] dark:text-[#A8A199]">
+            <div className="font-mono text-[10px] tracking-wider text-[var(--text-muted)]">
               {wordCount} TỪ · {charCount} KÝ TỰ
             </div>
           </div>
@@ -351,21 +351,21 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
               markDirty()
               setContent(e.target.value)
             }}
-            className="paper-lined w-full flex-1 resize-y rounded-2xl border-none p-3 font-sans text-[15px] leading-[32px] text-[#2B2724] outline-none placeholder:text-[#7A736B]/60 dark:text-[#EDE8E3] dark:placeholder:text-[#A8A199]/50 bg-transparent"
+            className="paper-lined w-full flex-1 resize-y rounded-2xl border-none p-3 font-sans text-[15px] leading-[32px] text-[var(--text)] outline-none placeholder:text-[var(--text-muted)] bg-[var(--surface)]"
           />
 
           {/* Thanh trạng thái tự động lưu */}
-          <div className="mt-4 flex items-center justify-between border-t border-[#2B2724]/10 pt-3 text-xs font-sans text-[#7A736B] dark:border-white/10 dark:text-[#A8A199]">
+          <div className="mt-4 flex items-center justify-between border-t border-[var(--border)] pt-3 text-xs font-sans text-[var(--text-muted)]">
             <div className="flex items-center gap-1.5">
               {status === 'saving' && (
-                <span className="inline-flex items-center gap-1 text-[#2B2724] dark:text-[#EDE8E3]">
-                  <span className="inline-block size-2 animate-ping rounded-full bg-[#F4C6D0]" />
+                <span className="inline-flex items-center gap-1 text-[var(--text)]">
+                  <span className="inline-block size-2 animate-ping rounded-full bg-[var(--pastel-pink)]" />
                   đang cất trang giấy vào ngăn tủ...
                 </span>
               )}
               {status === 'saved' && (
-                <span className="inline-flex items-center gap-1 text-[#2B2724] dark:text-[#8CC3A0] font-medium">
-                  <CloudCheck size={14} className="text-[#8CC3A0]" />
+                <span className="inline-flex items-center gap-1 text-[var(--mood-5)] font-medium">
+                  <CloudCheck size={14} className="text-[var(--mood-5)]" />
                   đã lưu êm đềm {lastSavedTime ? `lúc ${lastSavedTime}` : ''} ✿
                 </span>
               )}
@@ -377,7 +377,7 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
               )}
             </div>
 
-            {!mood && <span className="font-serif italic text-[#E08A82]">chọn tâm trạng để bắt đầu</span>}
+            {!mood && <span className="font-serif italic text-[var(--mood-1)]">chọn tâm trạng để bắt đầu</span>}
           </div>
         </motion.section>
 
@@ -387,7 +387,7 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
           type="submit"
           disabled={!mood || status === 'saving'}
           onClick={playPopSound}
-          className="group flex w-full items-center justify-center gap-2 rounded-full border-[1.5px] border-[#2B2724] bg-[#F4C6D0] py-3.5 font-sans text-sm font-medium text-[#2B2724] shadow-[2px_3px_0px_#2B2724] transition-all hover:-translate-y-0.5 hover:shadow-[3px_4px_0px_#2B2724] active:translate-y-0 disabled:opacity-40"
+          className="group flex w-full items-center justify-center gap-2 rounded-full border-[1.5px] border-[var(--border-strong)] bg-[var(--pastel-pink)] py-3.5 font-sans text-sm font-medium text-[var(--text)] shadow-[2px_3px_0px_var(--border-strong)] transition-all hover:-translate-y-0.5 hover:shadow-[3px_4px_0px_var(--border-strong)] active:translate-y-0 disabled:opacity-40"
         >
           {status === 'saved' ? (
             <>

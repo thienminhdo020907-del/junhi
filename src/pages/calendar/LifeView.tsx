@@ -54,13 +54,13 @@ export default function LifeView({ onOpenWeek }: Props) {
           min="1900-01-01"
           value={draft || birthDate || ''}
           onChange={(e) => setDraft(e.target.value)}
-          className="w-full rounded-xl border border-brand-100 bg-transparent px-3 py-2 dark:border-white/20"
+          className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] px-3 py-2 outline-none focus:border-[var(--accent)]"
         />
         <div className="flex gap-2">
           <button
             id="birth-save"
             type="submit"
-            className="rounded-xl bg-brand-500 px-4 py-2 text-sm font-medium text-white active:scale-95"
+            className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-contrast)] active:scale-95"
           >
             Lưu
           </button>
@@ -68,7 +68,7 @@ export default function LifeView({ onOpenWeek }: Props) {
             <button
               type="button"
               onClick={() => setEditing(false)}
-              className="rounded-xl px-4 py-2 text-sm text-slate-500"
+              className="rounded-xl px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text)]"
             >
               Huỷ
             </button>
@@ -91,7 +91,7 @@ export default function LifeView({ onOpenWeek }: Props) {
 
   return (
     <div className="card">
-      <div className="mb-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+      <div className="mb-3 flex items-center justify-between text-xs text-[var(--text-muted)]">
         <span>
           Đã sống {currentWeek.toLocaleString('vi-VN')} / {total.toLocaleString('vi-VN')} tuần
         </span>
@@ -102,7 +102,7 @@ export default function LifeView({ onOpenWeek }: Props) {
             setDraft(birthDate ?? '')
             setEditing(true)
           }}
-          className="underline"
+          className="underline hover:text-[var(--text)]"
         >
           Đổi ngày sinh
         </button>
@@ -111,7 +111,7 @@ export default function LifeView({ onOpenWeek }: Props) {
       <div className="space-y-[2px]">
         {Array.from({ length: YEARS }, (_, y) => (
           <div key={y} className="flex items-center gap-1">
-            <span className="w-4 shrink-0 text-right text-[8px] leading-none text-slate-500 dark:text-slate-400">
+            <span className="w-4 shrink-0 text-right text-[8px] leading-none text-[var(--text-muted)]">
               {y % 10 === 0 ? y : ''}
             </span>
             <div
@@ -131,8 +131,8 @@ export default function LifeView({ onOpenWeek }: Props) {
                     disabled={!past}
                     onClick={() => onOpenWeek(addDays(birth, idx * 7))}
                     className={`aspect-square rounded-[1.5px] ${
-                      idx === currentWeek ? 'ring-1 ring-brand-500' : ''
-                    } ${!past ? 'border border-slate-300/60 dark:border-white/10' : ''}`}
+                      idx === currentWeek ? 'ring-1 ring-[var(--accent)]' : ''
+                    } ${!past ? 'border border-[var(--border)]' : ''}`}
                     style={{
                       background: mood
                         ? moodColor(mood)

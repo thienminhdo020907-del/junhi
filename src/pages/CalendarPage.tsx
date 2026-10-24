@@ -125,8 +125,8 @@ export default function CalendarPage() {
             title={v.shortcut ? `Phím tắt: [${v.shortcut}]` : undefined}
             className={`rounded-full border-[1.5px] px-4 py-1.5 text-xs sm:text-sm font-sans transition-all hover:-translate-y-0.5 ${
               view === v.id
-                ? 'border-[#2B2724] bg-[#F6E3A8] font-medium text-[#2B2724] shadow-[1.5px_2px_0px_#2B2724] dark:border-white/50'
-                : 'border-[#2B2724]/20 bg-[#FBFAF7] text-[#7A736B] hover:border-[#2B2724] dark:border-white/20 dark:bg-[#282421] dark:text-[#A8A199]'
+                ? 'border-[var(--border-strong)] bg-[var(--pastel-butter)] font-medium text-[var(--text)] shadow-[1.5px_2px_0px_var(--border-strong)]'
+                : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]'
             }`}
           >
             <span>✿ {v.label}</span>
@@ -140,19 +140,19 @@ export default function CalendarPage() {
       </div>
 
       {/* Thanh điều hướng Trước / Sau */}
-      <div className="flex items-center justify-between rounded-full border-[1.5px] border-[#2B2724]/15 bg-[#FBFAF7] px-4 py-2 shadow-sm dark:border-white/15 dark:bg-[#282421]">
+      <div className="flex items-center justify-between rounded-full border-[1.5px] border-[var(--border)] bg-[var(--surface)] px-4 py-2 shadow-sm">
         <button
           id="cal-prev"
           disabled={view === 'life'}
           onClick={() => shift(-1)}
           aria-label="Trước"
           title="Trước (←)"
-          className="flex size-8 items-center justify-center rounded-full border-[1.5px] border-[#2B2724]/20 hover:border-[#2B2724] hover:shadow-[1px_2px_0px_#2B2724] transition-all disabled:invisible"
+          className="flex size-8 items-center justify-center rounded-full border-[1.5px] border-[var(--border)] hover:border-[var(--border-strong)] hover:shadow-[1px_2px_0px_var(--border-strong)] text-[var(--text)] transition-all disabled:invisible"
         >
           <ChevronLeft size={18} />
         </button>
 
-        <h2 className="font-serif text-lg sm:text-xl italic text-[#2B2724] dark:text-[#EDE8E3] capitalize">
+        <h2 className="font-serif text-lg sm:text-xl italic text-[var(--text)] capitalize">
           {rangeLabel(view, date)}
         </h2>
 
@@ -162,7 +162,7 @@ export default function CalendarPage() {
           onClick={() => shift(1)}
           aria-label="Sau"
           title="Sau (→)"
-          className="flex size-8 items-center justify-center rounded-full border-[1.5px] border-[#2B2724]/20 hover:border-[#2B2724] hover:shadow-[1px_2px_0px_#2B2724] transition-all disabled:invisible"
+          className="flex size-8 items-center justify-center rounded-full border-[1.5px] border-[var(--border)] hover:border-[var(--border-strong)] hover:shadow-[1px_2px_0px_var(--border-strong)] text-[var(--text)] transition-all disabled:invisible"
         >
           <ChevronRight size={18} />
         </button>
@@ -177,11 +177,11 @@ export default function CalendarPage() {
 
       {/* Bảng chú thích màu sắc pastel */}
       {view !== 'day' && (
-        <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs font-sans text-[#7A736B] dark:text-[#A8A199] pt-2">
+        <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs font-sans text-[var(--text-muted)] pt-2">
           {MOODS.map((m) => (
             <li key={m} className="flex items-center gap-1.5">
               <span
-                className="size-3.5 rounded-full border border-[#2B2724]/30"
+                className="size-3.5 rounded-full border border-[var(--border-strong)]"
                 style={{ background: moodColor(m) }}
               />
               <span>{MOOD_LABEL[m]}</span>

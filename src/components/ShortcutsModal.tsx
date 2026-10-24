@@ -48,17 +48,17 @@ export default function ShortcutsModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs animate-in fade-in">
-      <div className="card w-full max-w-sm !p-6 shadow-2xl">
-        <div className="mb-4 flex items-center justify-between border-b border-brand-100 pb-3 dark:border-white/10">
-          <div className="flex items-center gap-2 font-bold text-brand-600 dark:text-brand-300">
-            <Keyboard size={20} />
+      <div className="card w-full max-w-sm !p-6 shadow-2xl bg-[var(--surface)] text-[var(--text)] border-[1.5px] border-[var(--border)]">
+        <div className="mb-4 flex items-center justify-between border-b border-[var(--border)] pb-3">
+          <div className="flex items-center gap-2 font-bold text-[var(--text)]">
+            <Keyboard size={20} className="text-[var(--accent)]" />
             <h2 className="text-base">Phím tắt bàn phím</h2>
           </div>
           <button
             type="button"
             onClick={() => setIsOpen(false)}
             aria-label="Đóng"
-            className="rounded-xl p-1 text-slate-400 hover:bg-black/5 dark:hover:bg-white/10"
+            className="rounded-xl p-1 text-[var(--text-muted)] hover:bg-[var(--surface-2)]"
           >
             <X size={18} />
           </button>
@@ -67,16 +67,16 @@ export default function ShortcutsModal() {
         <ul className="space-y-2.5 text-xs">
           {shortcuts.map((s) => (
             <li key={s.key} className="flex items-center justify-between">
-              <span className="text-slate-600 dark:text-slate-300">{s.desc}</span>
-              <kbd className="inline-flex min-w-[28px] items-center justify-center rounded-lg border border-brand-200 bg-brand-50 px-2 py-1 font-mono text-[11px] font-bold text-brand-700 shadow-2xs dark:border-white/20 dark:bg-white/10 dark:text-brand-200">
+              <span className="text-[var(--text)]">{s.desc}</span>
+              <kbd className="inline-flex min-w-[28px] items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-2 py-1 font-mono text-[11px] font-bold text-[var(--text)] shadow-xs">
                 {s.key}
               </kbd>
             </li>
           ))}
         </ul>
 
-        <p className="mt-5 text-center text-[11px] text-slate-400">
-          Bấm <kbd className="rounded border px-1 py-0.5 font-mono text-[10px]">Esc</kbd> hoặc <kbd className="rounded border px-1 py-0.5 font-mono text-[10px]">?</kbd> để đóng
+        <p className="mt-5 text-center text-[11px] text-[var(--text-muted)]">
+          Bấm <kbd className="rounded border border-[var(--border)] bg-[var(--surface-2)] px-1 py-0.5 font-mono text-[10px] text-[var(--text)]">Esc</kbd> hoặc <kbd className="rounded border border-[var(--border)] bg-[var(--surface-2)] px-1 py-0.5 font-mono text-[10px] text-[var(--text)]">?</kbd> để đóng
         </p>
       </div>
     </div>

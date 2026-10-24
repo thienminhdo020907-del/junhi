@@ -147,7 +147,7 @@ export default function RetroWin95Wrapper({ children }: { children: ReactNode })
           <span className="cursor-pointer hover:bg-[#000080] hover:text-white px-1">
             Trợ <span className="underline">g</span>iúp (H)
           </span>
-          <span className="ml-auto text-[11px] text-slate-600 font-mono">
+          <span className="ml-auto text-[11px] opacity-70 font-mono">
             {location.pathname}
           </span>
         </div>
@@ -224,7 +224,7 @@ export default function RetroWin95Wrapper({ children }: { children: ReactNode })
             ))}
           </div>
 
-          <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-700">
+          <div className="hidden lg:flex items-center gap-1.5 text-xs opacity-80">
             <Palette size={13} />
             <span className="font-mono text-[11px]">Bảng màu Y2K</span>
           </div>

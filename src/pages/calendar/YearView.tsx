@@ -37,7 +37,7 @@ export default function YearView({ date, onOpenDay }: Props) {
           return (
             <span
               key={label}
-              className="whitespace-nowrap text-[9px] text-slate-500 dark:text-slate-400"
+              className="whitespace-nowrap text-[9px] text-[var(--text-muted)]"
               style={{ gridColumnStart: col + 1, gridRowStart: 1 }}
             >
               {label}
@@ -62,13 +62,13 @@ export default function YearView({ date, onOpenDay }: Props) {
               id={`year-day-${k}`}
               aria-label={k}
               onClick={() => onOpenDay(d)}
-              className={`aspect-square rounded-[3px] ${isSameDay(d, today) ? 'ring-1 ring-brand-500' : ''}`}
+              className={`aspect-square rounded-[3px] ${isSameDay(d, today) ? 'ring-1 ring-[var(--accent)]' : ''}`}
               style={{ background: e ? moodColor(e.mood) : 'var(--empty-cell)' }}
             />
           )
         })}
       </div>
-      <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+      <p className="mt-3 text-xs text-[var(--text-muted)]">
         {filled} ngày có nhật ký trong năm {y}
       </p>
     </div>

@@ -47,11 +47,11 @@ function EntryCard({ entry }: { entry: Entry }) {
       to={`${ROUTES.calendar}?ngay=${entry.date}`}
       id={`journal-${entry.date}`}
       onClick={playPopSound}
-      className="group relative flex gap-4 rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-5 shadow-[2px_3px_0px_rgba(43,39,36,0.06)] transition-all hover:-translate-y-1 hover:shadow-[3px_4px_0px_#2B2724] dark:border-white/20 dark:bg-[#282421]"
+      className="group relative flex gap-4 rounded-3xl border-[1.5px] border-[var(--border)] bg-[var(--surface)] p-5 shadow-[2px_3px_0px_rgba(0,0,0,0.05)] transition-all hover:-translate-y-1 hover:shadow-[3px_4px_0px_var(--border-strong)] hover:border-[var(--border-strong)]"
     >
       {/* Khuôn mặt vẽ tay tương ứng với mood */}
       <div
-        className="flex size-14 shrink-0 items-center justify-center rounded-2xl border-[1.5px] border-[#2B2724]/20 p-1 shadow-sm transition-transform group-hover:scale-105"
+        className="flex size-14 shrink-0 items-center justify-center rounded-2xl border-[1.5px] border-[var(--border)] p-1 shadow-sm transition-transform group-hover:scale-105"
         style={{ background: moodColor(entry.mood) }}
         title={MOOD_LABEL[entry.mood]}
       >
@@ -60,10 +60,10 @@ function EntryCard({ entry }: { entry: Entry }) {
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between">
-          <p className="font-serif text-base font-semibold italic text-[#2B2724] dark:text-[#EDE8E3] capitalize">
+          <p className="font-serif text-base font-semibold italic text-[var(--text)] capitalize">
             {dayFmt.format(fromKey(entry.date))}
           </p>
-          <span className="font-sans text-xs text-[#7A736B] dark:text-[#A8A199]">{MOOD_LABEL[entry.mood]}</span>
+          <span className="font-sans text-xs text-[var(--text-muted)]">{MOOD_LABEL[entry.mood]}</span>
         </div>
 
         {entry.tags.length > 0 && (
@@ -71,7 +71,7 @@ function EntryCard({ entry }: { entry: Entry }) {
             {entry.tags.map((t) => (
               <span
                 key={t}
-                className="rounded-full border border-[#2B2724]/20 bg-[#FBFAF7] px-2.5 py-0.5 text-[11px] font-sans text-[#7A736B] dark:border-white/20 dark:bg-white/5 dark:text-[#A8A199]"
+                className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-2.5 py-0.5 text-[11px] font-sans text-[var(--text-muted)]"
               >
                 {t}
               </span>
@@ -79,8 +79,8 @@ function EntryCard({ entry }: { entry: Entry }) {
           </div>
         )}
 
-        <p className="mt-2.5 line-clamp-2 font-sans text-sm text-[#2B2724]/80 dark:text-[#EDE8E3]/80 leading-relaxed">
-          {entry.content || <span className="font-serif italic text-[#7A736B]/60">Không có ghi chú thêm ✿</span>}
+        <p className="mt-2.5 line-clamp-2 font-sans text-sm text-[var(--text)]/80 leading-relaxed">
+          {entry.content || <span className="font-serif italic text-[var(--text-muted)]/60">Không có ghi chú thêm ✿</span>}
         </p>
       </div>
     </Link>
@@ -142,18 +142,18 @@ export default function JournalPage() {
       />
 
       {/* Thanh tìm kiếm & bộ lọc */}
-      <div className="relative rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-5 shadow-[2px_3px_0px_rgba(43,39,36,0.06)] dark:border-white/20 dark:bg-[#282421] space-y-4">
+      <div className="relative rounded-3xl border-[1.5px] border-[var(--border)] bg-[var(--surface)] p-5 shadow-[2px_3px_0px_rgba(0,0,0,0.05)] space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <label className="relative flex-1">
             <span className="sr-only">Tìm kiếm trang nhật ký</span>
-            <Search size={15} className="absolute top-1/2 left-3.5 -translate-y-1/2 text-[#7A736B]" />
+            <Search size={15} className="absolute top-1/2 left-3.5 -translate-y-1/2 text-[var(--text-muted)]" />
             <input
               id="journal-search"
               type="search"
               placeholder="Tìm theo cảm xúc, từ khóa, hoặc ngày (YYYY-MM-DD)…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full rounded-full border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] py-2 pr-4 pl-10 text-sm font-sans text-[#2B2724] outline-none transition-all placeholder:text-[#7A736B]/60 focus:border-[#2B2724] focus:shadow-[1.5px_2px_0px_#2B2724] dark:border-white/20 dark:bg-transparent dark:text-[#EDE8E3]"
+              className="w-full rounded-full border-[1.5px] border-[var(--border)] bg-[var(--surface)] py-2 pr-4 pl-10 text-sm font-sans text-[var(--text)] outline-none transition-all placeholder:text-[var(--text-muted)]/60 focus:border-[var(--border-strong)] focus:shadow-[1.5px_2px_0px_var(--border-strong)]"
             />
           </label>
 
@@ -173,8 +173,8 @@ export default function JournalPage() {
                   }}
                   className={`flex size-8 items-center justify-center rounded-full border-[1.5px] transition-all hover:-translate-y-0.5 ${
                     moodFilter === m
-                      ? 'border-[#2B2724] shadow-[1.5px_2px_0px_#2B2724] scale-105'
-                      : 'border-[#2B2724]/20 opacity-60 hover:opacity-100'
+                      ? 'border-[var(--border-strong)] shadow-[1.5px_2px_0px_var(--border-strong)] scale-105'
+                      : 'border-[var(--border)] opacity-60 hover:opacity-100'
                   }`}
                   style={{ background: moodColor(m) }}
                 >
@@ -192,8 +192,8 @@ export default function JournalPage() {
               title="Bộ lọc ngày"
               className={`flex size-8 items-center justify-center rounded-full border-[1.5px] transition-all ${
                 showAdvanced || startDate || endDate
-                  ? 'border-[#2B2724] bg-[#F6E3A8] text-[#2B2724] shadow-[1.5px_2px_0px_#2B2724]'
-                  : 'border-[#2B2724]/20 text-[#7A736B] hover:border-[#2B2724]'
+                  ? 'border-[var(--border-strong)] bg-[var(--pastel-butter)] text-[var(--text)] shadow-[1.5px_2px_0px_var(--border-strong)]'
+                  : 'border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]'
               }`}
             >
               <Filter size={14} />
@@ -204,7 +204,7 @@ export default function JournalPage() {
                 type="button"
                 onClick={resetFilters}
                 title="Xóa bộ lọc"
-                className="flex size-8 items-center justify-center rounded-full border-[1.5px] border-[#2B2724]/20 text-[#7A736B] hover:border-[#2B2724] hover:text-[#2B2724]"
+                className="flex size-8 items-center justify-center rounded-full border-[1.5px] border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]"
               >
                 <RotateCcw size={14} />
               </button>
@@ -214,8 +214,8 @@ export default function JournalPage() {
 
         {/* Thẻ cảm xúc để lọc nhanh */}
         {availableTags.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-[#2B2724]/10 dark:border-white/10">
-            <span className="font-mono text-[10px] tracking-widest text-[#7A736B] uppercase mr-1">
+          <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-[var(--border)]">
+            <span className="font-mono text-[10px] tracking-widest text-[var(--text-muted)] uppercase mr-1">
               TAGS:
             </span>
             {availableTags.map((t) => {
@@ -230,8 +230,8 @@ export default function JournalPage() {
                   }}
                   className={`rounded-full border-[1.5px] px-3 py-0.5 text-xs font-sans transition-all hover:-translate-y-0.5 ${
                     on
-                      ? 'border-[#2B2724] bg-[#CFE3DD] text-[#2B2724] font-medium shadow-[1.5px_2px_0px_#2B2724]'
-                      : 'border-[#2B2724]/20 bg-[#FBFAF7] text-[#7A736B] hover:border-[#2B2724] dark:border-white/20 dark:bg-transparent dark:text-[#A8A199]'
+                      ? 'border-[var(--border-strong)] bg-[var(--pastel-mint)] text-[var(--text)] font-medium shadow-[1.5px_2px_0px_var(--border-strong)]'
+                      : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]'
                   }`}
                 >
                   {t}
@@ -265,11 +265,11 @@ export default function JournalPage() {
             return (
               <section key={monthKey} className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <DoodleFlower size={14} className="text-[#F4C6D0]" />
-                  <h3 className="font-serif text-lg italic text-[#2B2724] dark:text-[#EDE8E3] capitalize">
+                  <DoodleFlower size={14} className="text-[var(--pastel-pink)]" />
+                  <h3 className="font-serif text-lg italic text-[var(--text)] capitalize">
                     {label}
                   </h3>
-                  <span className="font-mono text-[10px] text-[#7A736B] dark:text-[#A8A199]">
+                  <span className="font-mono text-[10px] text-[var(--text-muted)]">
                     ({monthEntries.length} trang)
                   </span>
                 </div>

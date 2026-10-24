@@ -1,42 +1,66 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
+
 @theme {
   --font-sans: 'DM Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-serif: 'Playfair Display', 'Instrument Serif', Georgia, serif;
   --font-mono: 'Space Mono', ui-monospace, monospace;
 
-  --color-cozy-cream: #F3F1EC;
-  --color-cozy-card: #FBFAF7;
-  --color-cozy-brown: #2B2724;
-  --color-cozy-gray: #7A736B;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
 
-  --color-pastel-pink: #F4C6D0;
-  --color-pastel-mint: #CFE3DD;
-  --color-pastel-butter: #F6E3A8;
-  --color-pastel-sky: #CFE0F1;
-  --color-pastel-lavender: #D9CFEA;
+  --color-pastel-pink: var(--pastel-pink);
+  --color-pastel-mint: var(--pastel-mint);
+  --color-pastel-butter: var(--pastel-butter);
+  --color-pastel-sky: var(--pastel-sky);
+  --color-pastel-lavender: var(--pastel-lavender);
 
-  --color-mood-1: #E08A82;
-  --color-mood-2: #F2B58B;
-  --color-mood-3: #F6E3A8;
-  --color-mood-4: #BFDDCB;
-  --color-mood-5: #8CC3A0;
+  --color-mood-1: var(--mood-1);
+  --color-mood-2: var(--mood-2);
+  --color-mood-3: var(--mood-3);
+  --color-mood-4: var(--mood-4);
+  --color-mood-5: var(--mood-5);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 }
 
 :root {
-  --bg-page: #F3F1EC;
-  --bg-card: #FBFAF7;
-  --text-main: #2B2724;
+  /* Giá trị chuẩn Light mode */
+  --bg: #F3F1EC;
+  --surface: #FBFAF7;
+  --surface-2: #EFECE6;
+  --text: #2B2724;
   --text-muted: #7A736B;
-  --border-main: #2B2724;
-  --border-subtle: rgba(43, 39, 36, 0.15);
+  --placeholder: rgba(43, 39, 36, 0.45);
+  --border: rgba(43, 39, 36, 0.14);
+  --border-strong: #2B2724;
 
+  --accent: #E89BA7;
+  --accent-contrast: #2B2724;
+  --success: #16A34A;
+  --danger: #DC2626;
+
+  /* Màu Pastel (Light) */
   --pastel-pink: #F4C6D0;
   --pastel-mint: #CFE3DD;
   --pastel-butter: #F6E3A8;
   --pastel-sky: #CFE0F1;
   --pastel-lavender: #D9CFEA;
 
+  /* Màu Mood 1-5 (Light) */
   --mood-1: #E08A82;
   --mood-2: #F2B58B;
   --mood-3: #F6E3A8;
@@ -44,44 +68,97 @@
   --mood-5: #8CC3A0;
   --empty-cell: #E7E3DC;
 
-  color-scheme: light;
+  /* Màu biểu đồ (Light) */
+  --chart-1: #7C6CF0;
+  --chart-2: #16A34A;
+  --chart-3: #F59E0B;
+  --chart-4: #EF4444;
+  --chart-5: #06B6D4;
+
+  /* Aliases cho code cũ */
+  --bg-page: var(--bg);
+  --bg-card: var(--surface);
+  --text-main: var(--text);
+  --border-main: var(--border-strong);
+  --border-subtle: var(--border);
+
+  color-scheme: light dark;
 }
 
-.dark, [data-theme="dark"] {
-  --bg-page: #1F1C1A;
-  --bg-card: #282421;
-  --text-main: #EDE8E3;
-  --text-muted: #A8A199;
-  --border-main: #4E4640;
-  --border-subtle: rgba(237, 232, 227, 0.15);
+[data-theme="dark"], .dark {
+  /* Giá trị chuẩn Dark mode theo yêu cầu:
+     --bg #1A1715, --surface #26221F, --surface-2 #302B27
+     --text #F5F2EC (trắng ngà), --text-muted #B8AFA4, placeholder rgba(245,242,236,0.5)
+     --border rgba(255,255,255,0.14) */
+  --bg: #1A1715;
+  --surface: #26221F;
+  --surface-2: #302B27;
+  --text: #F5F2EC;
+  --text-muted: #B8AFA4;
+  --placeholder: rgba(245, 242, 236, 0.5);
+  --border: rgba(255, 255, 255, 0.14);
+  --border-strong: rgba(255, 255, 255, 0.35);
 
-  --pastel-pink: #C996A1;
-  --pastel-mint: #9EBCB3;
-  --pastel-butter: #C4B37C;
-  --pastel-sky: #9CB2C7;
-  --pastel-lavender: #A79DB8;
+  --accent: #D98A96;
+  --accent-contrast: #2B2724; /* Chữ trên nền chip/nút pastel sáng giữ màu tối để đọc rõ */
+  --success: #4ADE80;
+  --danger: #F87171;
 
-  --mood-1: #B56860;
-  --mood-2: #C48E66;
-  --mood-3: #C4B37C;
-  --mood-4: #8CAFA0;
-  --mood-5: #659C79;
-  --empty-cell: #332E2A;
+  /* Màu Pastel (Dark - giảm độ sáng một chút cho dịu mắt) */
+  --pastel-pink: #A86B77;
+  --pastel-mint: #5E7E74;
+  --pastel-butter: #9E8955;
+  --pastel-sky: #647B91;
+  --pastel-lavender: #766B87;
+
+  /* Màu Mood 1-5 (Dark - giảm độ sáng cho dịu mắt) */
+  --mood-1: #A6524A;
+  --mood-2: #AA6E44;
+  --mood-3: #9E8955;
+  --mood-4: #577767;
+  --mood-5: #477759;
+  --empty-cell: #302B27;
+
+  /* Màu biểu đồ (Dark) */
+  --chart-1: #9D8FF7;
+  --chart-2: #4ADE80;
+  --chart-3: #FBBF24;
+  --chart-4: #F87171;
+  --chart-5: #38BDF8;
+
+  /* Aliases cho code cũ */
+  --bg-page: var(--bg);
+  --bg-card: var(--surface);
+  --text-main: var(--text);
+  --border-main: var(--border-strong);
+  --border-subtle: var(--border);
 
   color-scheme: dark;
 }
 
-html, body, #root {
-  min-height: 100%;
+/* Áp background: var(--bg) và color: var(--text) cho html, body, #root, min-height: 100vh để nền phủ hết */
+html {
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--text);
 }
 
 body {
+  min-height: 100vh;
   margin: 0;
-  background-color: var(--bg-page);
-  color: var(--text-main);
+  background-color: var(--bg);
+  color: var(--text);
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  color: var(--text);
 }
 
 /* Custom Con trỏ chuột hình hoa nhỏ ✿ trên các phần tử tương tác */
@@ -95,25 +172,18 @@ input[type="checkbox"],
 }
 
 /* Thẻ (Card) Whimsical Cozy */
-@utility card {
+.card, .cozy-card {
   border-radius: 24px;
-  border: 1.5px solid var(--border-subtle);
-  background-color: var(--bg-card);
+  border: 1.5px solid var(--border);
+  background-color: var(--surface);
+  color: var(--text);
   padding: 1.25rem;
-  box-shadow: 0 4px 20px -2px rgba(43, 39, 36, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.cozy-card {
-  background-color: var(--bg-card);
-  border: 1.5px solid var(--border-subtle);
-  border-radius: 24px;
-  box-shadow: 0 4px 20px -2px rgba(43, 39, 36, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.cozy-card:hover, .card:hover {
-  border-color: var(--border-main);
+.card:hover, .cozy-card:hover {
+  border-color: var(--border-strong);
 }
 
 /* Nút hình viên thuốc (Pill Button) */
@@ -123,9 +193,9 @@ input[type="checkbox"],
   justify-content: center;
   gap: 0.5rem;
   border-radius: 9999px;
-  border: 1.5px solid var(--border-main);
-  background-color: var(--bg-card);
-  color: var(--text-main);
+  border: 1.5px solid var(--border-strong);
+  background-color: var(--surface);
+  color: var(--text);
   font-family: var(--font-sans);
   font-size: 0.875rem;
   padding: 0.5rem 1.25rem;
@@ -134,39 +204,51 @@ input[type="checkbox"],
 
 .cozy-pill-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 2px 3px 0px var(--border-main);
+  box-shadow: 2px 3px 0px var(--border-strong);
 }
 
 .cozy-pill-btn:active {
   transform: translateY(0px);
-  box-shadow: 0px 0px 0px var(--border-main);
+  box-shadow: 0px 0px 0px var(--border-strong);
 }
 
-/* Nền giấy có dòng kẻ mờ (Lined Paper Background) cho trang viết nhật ký */
+/* Textarea dùng nền var(--surface), chữ var(--text), placeholder var(--placeholder), dòng kẻ độ mờ 0.12 */
 .paper-lined {
-  background-color: var(--bg-card);
+  background-color: var(--surface);
+  color: var(--text);
   background-image: repeating-linear-gradient(
     transparent,
     transparent 31px,
-    rgba(43, 39, 36, 0.07) 31px,
-    rgba(43, 39, 36, 0.07) 32px
+    rgba(43, 39, 36, 0.12) 31px,
+    rgba(43, 39, 36, 0.12) 32px
   );
   line-height: 32px;
 }
 
-.dark .paper-lined,
-[data-theme="dark"] .paper-lined {
+.paper-lined::placeholder {
+  color: var(--placeholder);
+}
+
+[data-theme="dark"] .paper-lined,
+.dark .paper-lined {
+  background-color: var(--surface);
+  color: var(--text);
   background-image: repeating-linear-gradient(
     transparent,
     transparent 31px,
-    rgba(237, 232, 227, 0.08) 31px,
-    rgba(237, 232, 227, 0.08) 32px
+    rgba(245, 242, 236, 0.12) 31px,
+    rgba(245, 242, 236, 0.12) 32px
   );
+}
+
+[data-theme="dark"] .paper-lined::placeholder,
+.dark .paper-lined::placeholder {
+  color: var(--placeholder);
 }
 
 /* Hiệu ứng focus ring rõ nét dễ tiếp cận */
 :focus-visible {
-  outline: 2px solid var(--pastel-pink);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 

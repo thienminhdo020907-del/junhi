@@ -26,15 +26,15 @@ export default function DayView({ date }: { date: Date }) {
               {MOOD_EMOJI[entry.mood]}
             </div>
             <div>
-              <p className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+              <p className="text-xs font-semibold tracking-wider text-[var(--text-muted)] uppercase">
                 Tâm trạng
               </p>
-              <p className="text-lg font-bold">{MOOD_LABEL[entry.mood]}</p>
+              <p className="text-lg font-bold text-[var(--text)]">{MOOD_LABEL[entry.mood]}</p>
             </div>
           </div>
 
           {(entry.energy || entry.sleepHours != null) && (
-            <p className="mt-4 text-sm font-medium text-slate-600 dark:text-slate-300">
+            <p className="mt-4 text-sm font-medium text-[var(--text-muted)]">
               {entry.energy && `⚡ Năng lượng: ${ENERGY_LABEL[entry.energy]}`}
               {entry.energy && entry.sleepHours != null && ' · '}
               {entry.sleepHours != null && `🌙 Ngủ ${entry.sleepHours} giờ`}
@@ -46,7 +46,7 @@ export default function DayView({ date }: { date: Date }) {
               {entry.tags.map((t) => (
                 <li
                   key={t}
-                  className="rounded-full bg-brand-100/70 px-3 py-1 text-xs font-medium text-brand-700 dark:bg-white/10 dark:text-brand-200"
+                  className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--text)]"
                 >
                   {t}
                 </li>
@@ -54,25 +54,25 @@ export default function DayView({ date }: { date: Date }) {
             </ul>
           )}
 
-          <p className="mt-5 whitespace-pre-wrap text-[15px] leading-relaxed text-slate-700 dark:text-slate-200">
-            {entry.content || <span className="italic text-slate-400">Không có ghi chú thêm.</span>}
+          <p className="mt-5 whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--text)]">
+            {entry.content || <span className="italic text-[var(--text-muted)]">Không có ghi chú thêm.</span>}
           </p>
         </>
       ) : (
         <div className="flex flex-col items-center py-10 text-center">
-          <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-500 ring-1 ring-brand-100 dark:bg-white/5 dark:text-brand-300 dark:ring-white/10">
+          <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-[var(--surface-2)] text-[var(--accent)] ring-1 ring-[var(--border)]">
             <CalendarHeart size={28} />
           </div>
-          <p className="text-base font-semibold text-slate-700 dark:text-slate-200">
+          <p className="text-base font-serif italic font-semibold text-[var(--text)]">
             Chưa có ghi chép nào cho ngày này
           </p>
-          <p className="mt-1 max-w-xs text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 max-w-xs text-xs text-[var(--text-muted)]">
             Mỗi ngày trôi qua đều là một mảnh ghép quý giá. Hãy ghi lại vài dòng cảm xúc nhé!
           </p>
           {isToday && (
             <Link
               to={ROUTES.today}
-              className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-brand-500 px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-brand-600 active:scale-95"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] shadow-sm transition-all hover:opacity-90 active:scale-95"
             >
               <PenLine size={14} /> Viết nhật ký hôm nay
             </Link>

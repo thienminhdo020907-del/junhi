@@ -49,13 +49,13 @@ export default function WhimsicalHero({ onScrollToEntry }: WhimsicalHeroProps) {
         transition={COZY_SPRING}
         className="mx-auto max-w-xl px-4"
       >
-        <span className="font-mono text-[10px] tracking-[0.25em] text-[#7A736B] dark:text-[#A8A199] uppercase">
+        <span className="font-mono text-[10px] tracking-[0.25em] text-[var(--text-muted)] uppercase">
           A LITTLE LOVE FOR YOUR HEART
         </span>
-        <h1 className="mt-2 font-serif text-4xl sm:text-5xl font-normal italic text-[#2B2724] dark:text-[#EDE8E3] leading-tight">
+        <h1 className="mt-2 font-serif text-4xl sm:text-5xl font-normal italic text-[var(--text)] leading-tight">
           nơi lắng nghe từng cảm xúc nhỏ ✿
         </h1>
-        <p className="mt-3 font-sans text-sm sm:text-base text-[#7A736B] dark:text-[#A8A199] max-w-md mx-auto leading-relaxed">
+        <p className="mt-3 font-sans text-sm sm:text-base text-[var(--text-muted)] max-w-md mx-auto leading-relaxed">
           một góc nhỏ ấm áp, thủ công và bình yên để bạn gửi gắm tâm sự mỗi ngày.
         </p>
       </motion.div>
@@ -79,9 +79,9 @@ export default function WhimsicalHero({ onScrollToEntry }: WhimsicalHeroProps) {
               playPopSound()
               onScrollToEntry()
             }}
-            className="group inline-flex items-center gap-2 rounded-full border-[1.5px] border-[#2B2724] bg-[#F4C6D0] px-6 py-2.5 font-sans text-sm font-medium text-[#2B2724] shadow-[2px_3px_0px_#2B2724] transition-all hover:-translate-y-0.5 hover:shadow-[3px_4px_0px_#2B2724] active:translate-y-0"
+            className="group inline-flex items-center gap-2 rounded-full border-[1.5px] border-[var(--border-strong)] bg-[var(--pastel-pink)] px-6 py-2.5 font-sans text-sm font-medium text-[var(--text)] shadow-[2px_3px_0px_var(--border-strong)] transition-all hover:-translate-y-0.5 hover:shadow-[3px_4px_0px_var(--border-strong)] active:translate-y-0"
           >
-            <DoodleFlower size={16} className="text-[#2B2724] transition-transform group-hover:rotate-45" />
+            <DoodleFlower size={16} className="text-[var(--text)] transition-transform group-hover:rotate-45" />
             <span>ghi nhật ký hôm nay ✿</span>
           </button>
         </motion.div>
@@ -96,7 +96,7 @@ export default function WhimsicalHero({ onScrollToEntry }: WhimsicalHeroProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...COZY_SPRING, delay: 0.1 * i }}
             whileHover={{ scale: 1.03, rotate: 0 }}
-            className={`relative rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-5 pt-7 text-left shadow-[2px_3px_0px_rgba(43,39,36,0.08)] transition-all dark:border-white/20 dark:bg-[#282421] dark:shadow-none ${c.tilt}`}
+            className={`relative rounded-3xl border-[1.5px] border-[var(--border)] bg-[var(--surface)] p-5 pt-7 text-left shadow-[2px_3px_0px_rgba(0,0,0,0.05)] transition-all hover:border-[var(--border-strong)] ${c.tilt}`}
           >
             {/* Miếng băng dán washi tape dán ở mép trên */}
             <div className="absolute -top-2 left-1/2 -translate-x-1/2">
@@ -105,11 +105,11 @@ export default function WhimsicalHero({ onScrollToEntry }: WhimsicalHeroProps) {
 
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xl">{c.icon}</span>
-              <h3 className="font-serif text-lg italic text-[#2B2724] dark:text-[#EDE8E3]">
+              <h3 className="font-serif text-lg italic text-[var(--text)]">
                 {c.title}
               </h3>
             </div>
-            <p className="font-sans text-xs text-[#7A736B] dark:text-[#A8A199] leading-relaxed">
+            <p className="font-sans text-xs text-[var(--text-muted)] leading-relaxed">
               {c.desc}
             </p>
           </motion.div>

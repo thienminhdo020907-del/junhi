@@ -43,13 +43,13 @@ export default function WeekView({ date, onOpenDay }: Props) {
               onClick={() => onOpenDay(d)}
               className="flex flex-col items-center gap-1.5 active:scale-95 transition-transform"
             >
-              <span className="text-[11px] text-slate-500 dark:text-slate-400">
+              <span className="text-[11px] font-mono text-[var(--text-muted)]">
                 {WEEKDAY_SHORT[i]}
               </span>
               <span
-                className={`flex aspect-[3/4] w-full items-center justify-center rounded-xl text-sm font-semibold ${
-                  isToday ? 'ring-2 ring-brand-500' : ''
-                } ${e ? 'text-black/70' : 'text-slate-500 dark:text-slate-400'}`}
+                className={`flex aspect-[3/4] w-full items-center justify-center rounded-xl text-sm font-semibold border-[1.5px] border-[var(--border)] ${
+                  isToday ? 'ring-2 ring-[var(--border-strong)] border-[var(--border-strong)]' : ''
+                } ${e ? 'text-[var(--text)]' : 'text-[var(--text-muted)]'}`}
                 style={{ background: e ? moodColor(e.mood) : 'var(--empty-cell)' }}
               >
                 {d.getDate()}
@@ -103,7 +103,7 @@ export default function WeekView({ date, onOpenDay }: Props) {
           ))}
         </svg>
         {points.length === 0 && (
-          <p className="mt-1 text-center text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-center text-xs text-[var(--text-muted)]">
             Tuần này chưa có dữ liệu.
           </p>
         )}

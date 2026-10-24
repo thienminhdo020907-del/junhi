@@ -27,17 +27,17 @@ import {
 } from '@/lib/stats'
 import { moodColor, type Mood } from '@/lib/mood'
 
-const BRAND = '#7c6cf0'
-const GOOD = '#16a34a'
-const BAD = '#ef4444'
+const BRAND = 'var(--accent)'
+const GOOD = 'var(--success)'
+const BAD = 'var(--danger)'
 const FULL_WEEKDAY = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật']
 
 const axisTick = { fill: 'currentColor', fontSize: 11, opacity: 0.6 }
 const tooltipStyle = {
-  borderRadius: 12,
-  border: 'none',
-  background: 'rgba(30,27,58,0.92)',
-  color: '#fff',
+  borderRadius: 14,
+  border: '1.5px solid var(--border)',
+  background: 'var(--surface)',
+  color: 'var(--text)',
   fontSize: 12,
 }
 const fmtAvg = (v: unknown) => (typeof v === 'number' ? v.toFixed(1) : '—')
@@ -61,7 +61,7 @@ function Section({
 
 function TrendChart({ data }: { data: AvgPoint[] }) {
   return (
-    <div className="h-48 text-slate-500 dark:text-slate-400">
+    <div className="h-48 text-[var(--text-muted)]">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -24 }}>
           <CartesianGrid vertical={false} stroke="currentColor" strokeOpacity={0.12} />
@@ -101,7 +101,7 @@ function TrendChart({ data }: { data: AvgPoint[] }) {
 
 function WeekdayChart({ data, best, worst }: { data: AvgPoint[]; best: number; worst: number }) {
   return (
-    <div className="h-44 text-slate-500 dark:text-slate-400">
+    <div className="h-44 text-[var(--text-muted)]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -24 }}>
           <CartesianGrid vertical={false} stroke="currentColor" strokeOpacity={0.12} />
@@ -147,22 +147,22 @@ function TagList({
 }) {
   return (
     <div>
-      <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">
+      <p className="mb-2 text-xs text-[var(--text-muted)]">
         {title} <span className="opacity-70">({days} ngày)</span>
       </p>
       {items.length === 0 ? (
-        <p className="text-xs text-slate-400">Chưa có tag nào.</p>
+        <p className="text-xs text-[var(--text-muted)]">Chưa có tag nào.</p>
       ) : (
         <ul className="space-y-2">
           {items.map((t) => (
             <li key={t.tag}>
               <div className="mb-1 flex justify-between text-sm">
                 <span>{t.tag}</span>
-                <span className="text-xs text-slate-500 dark:text-slate-400">
+                <span className="text-xs text-[var(--text-muted)]">
                   {t.count} lần · {Math.round(t.share * 100)}%
                 </span>
               </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-black/5 dark:bg-white/10">
+              <div className="h-1.5 overflow-hidden rounded-full bg-[var(--surface-2)]">
                 <div
                   className="h-full rounded-full"
                   style={{ width: `${t.share * 100}%`, background: color }}
@@ -219,30 +219,30 @@ export default function StatsPage() {
         <div className="grid grid-cols-3 gap-3 lg:col-span-2">
           <div className="card !p-4 text-center">
             <Flame className="mx-auto text-orange-500" size={20} />
-            <p id="streak-current" className="mt-1 text-2xl font-bold">
+            <p id="streak-current" className="mt-1 text-2xl font-bold text-[var(--text)]">
               {current}
             </p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">Chuỗi hiện tại</p>
+            <p className="text-[11px] text-[var(--text-muted)]">Chuỗi hiện tại</p>
           </div>
           <div className="card !p-4 text-center">
             <Trophy className="mx-auto text-yellow-500" size={20} />
-            <p id="streak-longest" className="mt-1 text-2xl font-bold">
+            <p id="streak-longest" className="mt-1 text-2xl font-bold text-[var(--text)]">
               {longest}
             </p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">Dài nhất</p>
+            <p className="text-[11px] text-[var(--text-muted)]">Dài nhất</p>
           </div>
           <div className="card !p-4 text-center">
             <span
               className="mx-auto block size-5 rounded-full"
               style={{ background: moodColor(Math.round(overall) as Mood) }}
             />
-            <p className="mt-1 text-2xl font-bold">{overall.toFixed(1)}</p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">Mood TB</p>
+            <p className="mt-1 text-2xl font-bold text-[var(--text)]">{overall.toFixed(1)}</p>
+            <p className="text-[11px] text-[var(--text-muted)]">Mood TB</p>
           </div>
         </div>
 
         <Section title="Mood trung bình">
-          <div className="mb-2 grid grid-cols-2 rounded-xl bg-brand-100/60 p-1 text-sm dark:bg-white/10">
+          <div className="mb-2 grid grid-cols-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 text-sm">
             {(['week', 'month'] as const).map((r) => (
               <button
                 key={r}
@@ -250,8 +250,8 @@ export default function StatsPage() {
                 onClick={() => setRange(r)}
                 className={`rounded-lg py-1.5 font-medium transition-all ${
                   range === r
-                    ? 'bg-white text-brand-600 shadow-sm dark:bg-[#2b2845] dark:text-brand-100'
-                    : 'text-slate-500 dark:text-slate-400'
+                    ? 'border border-[var(--border-strong)] bg-[var(--pastel-mint)] text-[var(--text)] shadow-xs'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                 }`}
               >
                 {r === 'week' ? '12 tuần' : '12 tháng'}

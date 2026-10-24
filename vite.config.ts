@@ -1,10 +1,20 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath, URL } from 'node:url'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  // Backend dùng chung với bản deploy; đổi bằng VITE_API_PROXY trong .env.local nếu cần
+  const env = loadEnv(mode, process.cwd(), '')
+  const apiTarget = env.VITE_API_PROXY || 'https://junhi.vercel.app'
+
+  return {
+  server: {
+    proxy: {
+      '/api': { target: apiTarget, changeOrigin: true, secure: true },
+    },
+  },
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
@@ -44,4 +54,5 @@ export default defineConfig({
       },
     }),
   ],
+  }
 })

@@ -70,23 +70,23 @@ export default function PinSetupModal({ isOpen, onClose, onSuccess }: PinSetupMo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs animate-in fade-in">
-      <div className="card w-full max-w-xs !p-6 text-center shadow-2xl">
+      <div className="card w-full max-w-xs !p-6 text-center shadow-2xl bg-[var(--surface)] text-[var(--text)] border-[1.5px] border-[var(--border)]">
         <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-bold text-brand-600 dark:text-brand-300">
-            <KeyRound size={20} />
+          <div className="flex items-center gap-2 font-bold text-[var(--text)]">
+            <KeyRound size={20} className="text-[var(--accent)]" />
             <span className="text-base">Thiết lập mã PIN</span>
           </div>
           <button
             type="button"
             onClick={handleClose}
             aria-label="Đóng"
-            className="rounded-xl p-1 text-slate-400 hover:bg-black/5 dark:hover:bg-white/10"
+            className="rounded-xl p-1 text-[var(--text-muted)] hover:bg-[var(--surface-2)]"
           >
             <X size={18} />
           </button>
         </div>
 
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+        <p className="text-xs text-[var(--text-muted)]">
           {step === 'create'
             ? 'Nhập 4 chữ số cho mã PIN bảo vệ:'
             : 'Nhập lại mã PIN để xác nhận:'}
@@ -99,15 +99,15 @@ export default function PinSetupModal({ isOpen, onClose, onSuccess }: PinSetupMo
               key={i}
               className={`size-3.5 rounded-full border transition-all ${
                 i < activeLen
-                  ? 'border-brand-500 bg-brand-500 scale-110 shadow-sm shadow-brand-500/40'
-                  : 'border-slate-300 bg-slate-100 dark:border-white/20 dark:bg-white/5'
+                  ? 'border-[var(--accent)] bg-[var(--accent)] scale-110 shadow-sm'
+                  : 'border-[var(--border)] bg-[var(--surface-2)]'
               }`}
             />
           ))}
         </div>
 
         {error && (
-          <div className="mb-3 flex items-center justify-center gap-1.5 text-xs font-medium text-rose-500">
+          <div className="mb-3 flex items-center justify-center gap-1.5 text-xs font-medium text-[var(--danger)]">
             <ShieldAlert size={14} />
             <span>{error}</span>
           </div>
@@ -120,7 +120,7 @@ export default function PinSetupModal({ isOpen, onClose, onSuccess }: PinSetupMo
               key={n}
               type="button"
               onClick={() => handleDigit(n)}
-              className="flex aspect-square items-center justify-center rounded-xl bg-slate-100 text-lg font-bold text-slate-800 transition-all hover:bg-slate-200 active:scale-95 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+              className="flex aspect-square items-center justify-center rounded-xl bg-[var(--surface-2)] text-lg font-bold text-[var(--text)] border border-[var(--border)] transition-all hover:border-[var(--border-strong)] active:scale-95"
             >
               {n}
             </button>
@@ -129,7 +129,7 @@ export default function PinSetupModal({ isOpen, onClose, onSuccess }: PinSetupMo
           <button
             type="button"
             onClick={() => handleDigit('0')}
-            className="flex aspect-square items-center justify-center rounded-xl bg-slate-100 text-lg font-bold text-slate-800 transition-all hover:bg-slate-200 active:scale-95 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+            className="flex aspect-square items-center justify-center rounded-xl bg-[var(--surface-2)] text-lg font-bold text-[var(--text)] border border-[var(--border)] transition-all hover:border-[var(--border-strong)] active:scale-95"
           >
             0
           </button>
@@ -137,7 +137,7 @@ export default function PinSetupModal({ isOpen, onClose, onSuccess }: PinSetupMo
             type="button"
             onClick={handleDelete}
             aria-label="Xóa ký tự"
-            className="flex aspect-square items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition-all hover:bg-slate-100 active:scale-95 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10"
+            className="flex aspect-square items-center justify-center rounded-xl bg-[var(--surface-2)] text-[var(--text-muted)] border border-[var(--border)] transition-all hover:text-[var(--text)] hover:border-[var(--border-strong)] active:scale-95"
           >
             ←
           </button>
@@ -152,7 +152,7 @@ export default function PinSetupModal({ isOpen, onClose, onSuccess }: PinSetupMo
               setConfirmPin('')
               setError('')
             }}
-            className="mt-4 text-xs text-brand-600 underline dark:text-brand-400"
+            className="mt-4 text-xs text-[var(--accent)] underline"
           >
             Quay lại bước trước
           </button>

@@ -41,7 +41,7 @@ import {
   type PermissionState,
 } from '@/lib/notify'
 
-const muted = 'text-xs text-slate-500 dark:text-slate-400'
+const muted = 'text-xs text-[var(--text-muted)]'
 
 export default function SettingsPage() {
   const { loading, settings, save } = useReminder()
@@ -52,6 +52,31 @@ export default function SettingsPage() {
   // Cloud Auth & Sync
   const { user, isSyncing, lastSyncedAt, syncData, logout } = useAuth()
   const { theme, setTheme } = useTheme()
+  const [isDark, setIsDark] = useState(() => {
+    return document.documentElement.classList.contains('dark') ||
+      localStorage.getItem('junhi_theme') === 'dark'
+  })
+
+  const handleToggleDark = (dark: boolean) => {
+    setIsDark(dark)
+    const metaTheme = document.querySelector('meta[name="theme-color"]')
+    if (dark) {
+      document.documentElement.classList.add('dark')
+      document.documentElement.setAttribute('data-theme', 'dark')
+      document.body.classList.add('dark')
+      document.body.setAttribute('data-theme', 'dark')
+      if (metaTheme) metaTheme.setAttribute('content', '#1A1715')
+      localStorage.setItem('junhi_theme', 'dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+      document.documentElement.setAttribute('data-theme', 'light')
+      document.body.classList.remove('dark')
+      document.body.setAttribute('data-theme', 'light')
+      if (metaTheme) metaTheme.setAttribute('content', '#F3F1EC')
+      localStorage.setItem('junhi_theme', 'light')
+    }
+  }
+
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [syncFeedback, setSyncFeedback] = useState<string | null>(null)
   const [emailReminderEnabled, setEmailReminderEnabled] = useState(false)
@@ -98,47 +123,48 @@ export default function SettingsPage() {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Lỗi đồng bộ'
       setSyncFeedback(`Thất bại: ${msg}`)
-      setTimeout(() => setSyncFeedback(null), 4000)
     }
   }
 
-  // Bảo mật PIN
-  const { isPinEnabled, removePin } = usePinLock()
-  const [isPinModalOpen, setIsPinModalOpen] = useState(false)
-  const [pinSuccessMsg, setPinSuccessMsg] = useState('')
-
-  // Sao lưu / Phục hồi
-  const [isExporting, setIsExporting] = useState(false)
-  const [importStatus, setImportStatus] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
   const toggle = async () => {
-    const nextEnabled = !settings.enabled
-    if (nextEnabled && permission !== 'granted') {
-      const res = await requestPermission()
-      setPermission(res)
-      if (res === 'denied') {
-        alert('Trình duyệt đang chặn thông báo. Bạn vui lòng bật lại trong phần cài đặt trình duyệt của trang web.')
+    if (!settings.enabled) {
+      const p = await requestPermission()
+      setPermission(p)
+      if (p === 'denied') {
+        alert(
+          'Quyền thông báo đang bị chặn trong trình duyệt của bạn. Hãy bật lại trong cài đặt trang web.',
+        )
+        return
       }
     }
-    await save({ ...settings, enabled: nextEnabled })
+    await save({ ...settings, enabled: !settings.enabled })
   }
 
   const changeTime = async (time: string) => {
-    if (!time) return
     await save({ ...settings, time })
   }
 
   const handleTestNotification = async () => {
-    const success = await showReminderNotification()
-    if (success) {
-      setTestSent(true)
-      setTimeout(() => setTestSent(false), 3000)
-    } else {
-      const res = await requestPermission()
-      setPermission(res)
+    const p = await requestPermission()
+    setPermission(p)
+    if (p !== 'granted') {
+      alert('Vui lòng cấp quyền thông báo để gửi thử.')
+      return
     }
+    showReminderNotification()
+    setTestSent(true)
+    setTimeout(() => setTestSent(false), 3000)
   }
+
+  // Mã PIN bảo mật
+  const { isPinEnabled, removePin } = usePinLock()
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false)
+  const [pinSuccessMsg, setPinSuccessMsg] = useState('')
+
+  // Sao lưu JSON
+  const [isExporting, setIsExporting] = useState(false)
+  const [importStatus, setImportStatus] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const handleLockNow = () => {
     sessionStorage.removeItem('junhi_unlocked')
@@ -146,7 +172,7 @@ export default function SettingsPage() {
   }
 
   const handleRemovePin = async () => {
-    if (window.confirm('Bạn có chắc chắn muốn tắt khóa mã PIN?')) {
+    if (window.confirm('Bạn có chắc muốn tắt khóa mã PIN?')) {
       await removePin()
       setPinSuccessMsg('Đã tắt khóa mã PIN')
       setTimeout(() => setPinSuccessMsg(''), 3000)
@@ -192,31 +218,37 @@ export default function SettingsPage() {
         {/* Tùy chọn Giao diện: Hiện đại vs Retro Win95 MS Paint */}
         <section className="card space-y-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-violet-100 text-violet-600 dark:bg-white/10 dark:text-violet-300">
+            <div className="flex size-10 items-center justify-center rounded-2xl bg-[var(--surface-2)] text-[var(--accent)] border border-[var(--border)]">
               <Palette size={20} />
             </div>
             <div className="flex-1">
-              <h2 className="text-base font-semibold">Chủ đề giao diện (Theme)</h2>
+              <h2 className="text-base font-semibold text-[var(--text)]">Chủ đề giao diện (Theme)</h2>
               <p className={muted}>Chọn phong cách hiển thị bạn yêu thích</p>
             </div>
           </div>
 
+          {/* 7. Thẻ chọn theme: nền var(--surface-2), thẻ đang chọn viền var(--accent) dày 2px kèm dấu ✓, thẻ chưa chọn viền var(--border), chữ mô tả dùng var(--text-muted) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             {/* Chế độ Hiện đại */}
             <button
               type="button"
               onClick={() => setTheme('modern')}
-              className={`flex flex-col items-start rounded-2xl border p-4 text-left transition-all ${
+              className={`relative flex flex-col items-start rounded-2xl p-4 text-left transition-all bg-[var(--surface-2)] ${
                 theme === 'modern'
-                  ? 'border-brand-500 bg-brand-50/60 ring-2 ring-brand-500/20 dark:bg-brand-950/20'
-                  : 'border-brand-100/80 bg-white/40 hover:bg-white/80 dark:border-white/10 dark:bg-white/5'
+                  ? 'border-2 border-[var(--accent)] shadow-sm'
+                  : 'border border-[var(--border)] hover:border-[var(--border-strong)]'
               }`}
             >
-              <div className="mb-2 flex size-8 items-center justify-center rounded-xl bg-brand-500 text-white shadow-xs">
+              {theme === 'modern' && (
+                <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-contrast)] text-xs font-bold shadow-xs">
+                  ✓
+                </span>
+              )}
+              <div className="mb-2 flex size-8 items-center justify-center rounded-xl bg-[var(--accent)] text-[var(--accent-contrast)] shadow-xs">
                 <Sparkles size={16} />
               </div>
-              <p className="text-sm font-bold">Hiện đại (Modern)</p>
-              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-sm font-bold text-[var(--text)]">Hiện đại (Modern)</p>
+              <p className="mt-1 text-xs text-[var(--text-muted)] leading-relaxed">
                 Giao diện tinh tế, thanh thoát với Dark mode và chuyển động mượt mà.
               </p>
             </button>
@@ -225,42 +257,95 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={() => setTheme('win95')}
-              className={`flex flex-col items-start rounded-2xl border p-4 text-left transition-all ${
+              className={`relative flex flex-col items-start rounded-2xl p-4 text-left transition-all bg-[var(--surface-2)] ${
                 theme === 'win95'
-                  ? 'border-[#000080] bg-slate-200/80 ring-2 ring-[#000080]/30 shadow-sm'
-                  : 'border-brand-100/80 bg-white/40 hover:bg-white/80 dark:border-white/10 dark:bg-white/5'
+                  ? 'border-2 border-[var(--accent)] shadow-sm'
+                  : 'border border-[var(--border)] hover:border-[var(--border-strong)]'
               }`}
             >
-              <div className="mb-2 flex size-8 items-center justify-center rounded-xl bg-gradient-to-r from-[#000080] to-[#1084d0] text-white shadow-xs">
+              {theme === 'win95' && (
+                <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-contrast)] text-xs font-bold shadow-xs">
+                  ✓
+                </span>
+              )}
+              <div className="mb-2 flex size-8 items-center justify-center rounded-xl bg-[var(--surface)] text-[var(--text)] border border-[var(--border)] shadow-xs">
                 <span className="text-sm">🎨</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <p className="text-sm font-bold">Retro Win95 / Paint</p>
-                <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[10px] font-bold text-amber-700">Y2K</span>
+                <p className="text-sm font-bold text-[var(--text)]">Retro Win95 / Paint</p>
+                <span className="rounded bg-[var(--pastel-butter)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--accent-contrast)]">Y2K</span>
               </div>
-              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              <p className="mt-1 text-xs text-[var(--text-muted)] leading-relaxed">
                 Phong cách Windows 95, bảng màu MS Paint hoài niệm với chú ếch và cá vàng.
               </p>
             </button>
+          </div>
+
+          {/* Chế độ Sáng / Tối */}
+          <div className="pt-2 border-t border-[var(--border)]">
+            <h3 className="text-sm font-semibold mb-2 text-[var(--text)]">Chế độ màu (Sáng / Tối)</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => handleToggleDark(false)}
+                className={`relative flex items-center gap-2.5 rounded-2xl p-3 text-left transition-all bg-[var(--surface-2)] ${
+                  !isDark
+                    ? 'border-2 border-[var(--accent)] shadow-sm'
+                    : 'border border-[var(--border)] hover:border-[var(--border-strong)]'
+                }`}
+              >
+                {!isDark && (
+                  <span className="absolute top-2.5 right-2.5 flex size-4 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-contrast)] text-[10px] font-bold shadow-xs">
+                    ✓
+                  </span>
+                )}
+                <span className="text-lg">☀️</span>
+                <div>
+                  <p className="text-xs font-bold text-[var(--text)]">Kem ấm (Sáng)</p>
+                  <p className="text-[10px] text-[var(--text-muted)]">Nền kem dịu mắt</p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleToggleDark(true)}
+                className={`relative flex items-center gap-2.5 rounded-2xl p-3 text-left transition-all bg-[var(--surface-2)] ${
+                  isDark
+                    ? 'border-2 border-[var(--accent)] shadow-sm'
+                    : 'border border-[var(--border)] hover:border-[var(--border-strong)]'
+                }`}
+              >
+                {isDark && (
+                  <span className="absolute top-2.5 right-2.5 flex size-4 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-contrast)] text-[10px] font-bold shadow-xs">
+                    ✓
+                  </span>
+                )}
+                <span className="text-lg">🌙</span>
+                <div>
+                  <p className="text-xs font-bold text-[var(--text)]">Đêm ấm (Tối)</p>
+                  <p className="text-[10px] text-[var(--text-muted)]">Nền nâu đen tĩnh lặng</p>
+                </div>
+              </button>
+            </div>
           </div>
         </section>
 
         {/* Mục Tài khoản & Đồng bộ đám mây (MySQL Backend) */}
         <section className="card space-y-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-brand-100 text-brand-600 dark:bg-white/10 dark:text-brand-300">
+            <div className="flex size-10 items-center justify-center rounded-2xl bg-[var(--surface-2)] text-[var(--accent)] border border-[var(--border)]">
               <Database size={20} />
             </div>
             <div className="flex-1">
-              <h2 className="text-base font-semibold">Tài khoản & Đồng bộ đám mây (MySQL)</h2>
+              <h2 className="text-base font-semibold text-[var(--text)]">Tài khoản & Đồng bộ đám mây (MySQL)</h2>
               <p className={muted}>Đồng bộ nhật ký giữa các thiết bị và nhận email nhắc nhở</p>
             </div>
             {user ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-600 ring-1 ring-emerald-500/20 dark:bg-emerald-950/40 dark:text-emerald-400">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--success)]/15 px-2.5 py-1 text-xs font-semibold text-[var(--success)] border border-[var(--success)]/30">
                 <CloudCheck size={14} /> Đã kết nối
               </span>
             ) : (
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500 dark:bg-white/10 dark:text-slate-400">
+              <span className="rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-xs font-medium text-[var(--text-muted)] border border-[var(--border)]">
                 Chưa đăng nhập
               </span>
             )}
@@ -268,10 +353,10 @@ export default function SettingsPage() {
 
           {user ? (
             <div className="space-y-3.5 pt-1">
-              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-brand-50/50 p-3 dark:bg-white/5">
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-3.5">
                 <div>
-                  <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{user.email}</p>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-xs font-semibold text-[var(--text)]">{user.email}</p>
+                  <p className="text-[11px] text-[var(--text-muted)]">
                     {lastSyncedAt
                       ? `Đồng bộ lần cuối: ${lastSyncedAt.toLocaleTimeString('vi-VN')} ${lastSyncedAt.toLocaleDateString('vi-VN')}`
                       : 'Chưa đồng bộ trong phiên này'}
@@ -283,7 +368,7 @@ export default function SettingsPage() {
                     type="button"
                     disabled={isSyncing}
                     onClick={handleManualSync}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-brand-500 px-3 py-1.5 text-xs font-semibold text-white shadow-2xs hover:bg-brand-600 disabled:opacity-50 active:scale-95"
+                    className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-[var(--border-strong)] bg-[var(--accent)] px-3.5 py-1.5 text-xs font-semibold text-[var(--accent-contrast)] shadow-[1.5px_2px_0px_var(--border-strong)] hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 transition-all"
                   >
                     <RefreshCw size={13} className={isSyncing ? 'animate-spin' : ''} />
                     {isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ ngay'}
@@ -296,7 +381,7 @@ export default function SettingsPage() {
                         await logout()
                       }
                     }}
-                    className="inline-flex items-center gap-1 rounded-xl border border-rose-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-rose-600 shadow-2xs hover:bg-rose-50 active:scale-95 dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-400"
+                    className="inline-flex items-center gap-1 rounded-full border border-[var(--danger)]/30 bg-[var(--surface-2)] px-3 py-1.5 text-xs font-semibold text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-all active:scale-95"
                   >
                     <LogOut size={13} /> Đăng xuất
                   </button>
@@ -304,19 +389,19 @@ export default function SettingsPage() {
               </div>
 
               {syncFeedback && (
-                <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                <p className="text-xs font-medium text-[var(--success)]">
                   {syncFeedback}
                 </p>
               )}
 
               {/* Tùy chọn Nhận email nhắc hằng ngày */}
-              <div className="rounded-2xl border border-brand-100 p-3.5 space-y-3 dark:border-white/10">
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3.5 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Mail size={16} className="text-brand-500" />
+                    <Mail size={16} className="text-[var(--accent)]" />
                     <div>
-                      <p className="text-xs font-semibold">Gửi email nhắc nhở hằng ngày</p>
-                      <p className="text-[11px] text-slate-400">Tự động gửi email vào hộp thư của bạn qua Cron</p>
+                      <p className="text-xs font-semibold text-[var(--text)]">Gửi email nhắc nhở hằng ngày</p>
+                      <p className="text-[11px] text-[var(--text-muted)]">Tự động gửi email vào hộp thư của bạn qua Cron</p>
                     </div>
                   </div>
                   <button
@@ -324,21 +409,21 @@ export default function SettingsPage() {
                     role="switch"
                     aria-checked={emailReminderEnabled}
                     onClick={handleToggleEmailReminder}
-                    className={`relative h-6 w-11 rounded-full transition-colors ${
-                      emailReminderEnabled ? 'bg-brand-500' : 'bg-slate-300 dark:bg-white/20'
+                    className={`relative h-6 w-11 rounded-full transition-colors border border-[var(--border)] ${
+                      emailReminderEnabled ? 'bg-[var(--accent)]' : 'bg-[var(--surface)]'
                     }`}
                   >
                     <span
-                      className={`absolute top-0.5 left-0.5 size-5 rounded-full bg-white shadow transition-transform ${
-                        emailReminderEnabled ? 'translate-x-5' : ''
+                      className={`absolute top-0.5 left-0.5 size-4.5 rounded-full bg-[var(--surface)] border border-[var(--border)] shadow-xs transition-transform ${
+                        emailReminderEnabled ? 'translate-x-5 bg-white' : ''
                       }`}
                     />
                   </button>
                 </div>
 
                 {emailReminderEnabled && (
-                  <div className="flex items-center justify-between pt-1 border-t border-brand-50 dark:border-white/5">
-                    <label htmlFor="email-reminder-time" className="text-xs text-slate-600 dark:text-slate-300">
+                  <div className="flex items-center justify-between pt-2 border-t border-[var(--border)]">
+                    <label htmlFor="email-reminder-time" className="text-xs text-[var(--text)] font-medium">
                       Giờ gửi email
                     </label>
                     <input
@@ -346,7 +431,7 @@ export default function SettingsPage() {
                       type="time"
                       value={emailReminderTime}
                       onChange={(e) => handleChangeEmailTime(e.target.value)}
-                      className="rounded-lg border border-brand-200 bg-white px-2.5 py-1 text-xs font-semibold outline-none dark:border-white/20 dark:bg-white/10"
+                      className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1 text-xs font-semibold text-[var(--text)] outline-none focus:border-[var(--accent)]"
                     />
                   </div>
                 )}
@@ -354,19 +439,19 @@ export default function SettingsPage() {
             </div>
           ) : (
             <div className="space-y-3 pt-1">
-              <p className="text-xs text-slate-600 dark:text-slate-300">
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
                 Khi chưa đăng nhập, dữ liệu của bạn được lưu cục bộ an toàn trong IndexedDB của máy. Đăng nhập để tự động lưu vào MySQL và truy cập từ mọi thiết bị.
               </p>
               <div className="flex flex-wrap items-center gap-2.5">
                 <Link
                   to={ROUTES.login}
-                  className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-4 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-brand-600 active:scale-95"
+                  className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-[var(--border-strong)] bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] shadow-[1.5px_2px_0px_var(--border-strong)] hover:-translate-y-0.5 active:translate-y-0 transition-all"
                 >
                   <Cloud size={15} /> Đăng nhập tài khoản
                 </Link>
                 <Link
                   to={ROUTES.register}
-                  className="inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-white px-4 py-2 text-xs font-semibold text-brand-700 shadow-2xs hover:bg-brand-50 active:scale-95 dark:border-white/15 dark:bg-white/10 dark:text-brand-200 dark:hover:bg-white/15"
+                  className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-4 py-2 text-xs font-semibold text-[var(--text)] hover:border-[var(--border-strong)] active:scale-95 transition-all"
                 >
                   Tạo tài khoản mới
                 </Link>
@@ -374,22 +459,23 @@ export default function SettingsPage() {
             </div>
           )}
         </section>
+
         {/* Mục Bảo mật & Khóa mã PIN */}
         <section className="card space-y-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-brand-100 text-brand-600 dark:bg-white/10 dark:text-brand-300">
+            <div className="flex size-10 items-center justify-center rounded-2xl bg-[var(--surface-2)] text-[var(--accent)] border border-[var(--border)]">
               <Shield size={20} />
             </div>
             <div className="flex-1">
-              <h2 className="text-base font-semibold">Khóa bằng mã PIN</h2>
+              <h2 className="text-base font-semibold text-[var(--text)]">Khóa bằng mã PIN</h2>
               <p className={muted}>Bảo vệ quyền riêng tư nhật ký khi người khác mở trình duyệt</p>
             </div>
             {isPinEnabled ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-600 ring-1 ring-emerald-500/20 dark:bg-emerald-950/40 dark:text-emerald-400">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--success)]/15 px-2.5 py-1 text-xs font-semibold text-[var(--success)] border border-[var(--success)]/30">
                 <ShieldCheck size={14} /> Đang bật
               </span>
             ) : (
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500 dark:bg-white/10 dark:text-slate-400">
+              <span className="rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-xs font-medium text-[var(--text-muted)] border border-[var(--border)]">
                 Chưa bật
               </span>
             )}
@@ -399,7 +485,7 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={() => setIsPinModalOpen(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-3.5 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-brand-600 active:scale-95"
+              className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-[var(--border-strong)] bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] shadow-[1.5px_2px_0px_var(--border-strong)] hover:-translate-y-0.5 active:translate-y-0 transition-all"
             >
               <KeyRound size={15} />
               {isPinEnabled ? 'Đổi mã PIN' : 'Thiết lập mã PIN'}
@@ -410,14 +496,14 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={handleLockNow}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-brand-200 bg-white px-3.5 py-2 text-xs font-semibold text-brand-700 shadow-2xs hover:bg-brand-50 active:scale-95 dark:border-white/15 dark:bg-white/10 dark:text-brand-200 dark:hover:bg-white/15"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-3.5 py-2 text-xs font-semibold text-[var(--text)] hover:border-[var(--border-strong)] active:scale-95 transition-all"
                 >
                   <Lock size={14} /> Khóa ngay
                 </button>
                 <button
                   type="button"
                   onClick={handleRemovePin}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-white px-3.5 py-2 text-xs font-semibold text-rose-600 shadow-2xs hover:bg-rose-50 active:scale-95 dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-400"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--danger)]/30 bg-[var(--surface-2)] px-3.5 py-2 text-xs font-semibold text-[var(--danger)] hover:bg-[var(--danger)]/10 active:scale-95 transition-all"
                 >
                   <Trash2 size={14} /> Tắt mã PIN
                 </button>
@@ -426,12 +512,12 @@ export default function SettingsPage() {
           </div>
 
           {pinSuccessMsg && (
-            <p className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+            <p className="flex items-center gap-1.5 text-xs font-medium text-[var(--success)]">
               <Check size={14} /> {pinSuccessMsg}
             </p>
           )}
 
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-[var(--text-muted)]">
             Nhật ký là chuyện riêng tư. Khóa bằng mã PIN, không ai khác mở được, kể cả khi người khác cầm máy bạn.
           </p>
         </section>
@@ -439,16 +525,16 @@ export default function SettingsPage() {
         {/* Mục Sao lưu & Phục hồi dữ liệu */}
         <section className="card space-y-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-brand-100 text-brand-600 dark:bg-white/10 dark:text-brand-300">
+            <div className="flex size-10 items-center justify-center rounded-2xl bg-[var(--surface-2)] text-[var(--accent)] border border-[var(--border)]">
               <FileDown size={20} />
             </div>
             <div className="flex-1">
-              <h2 className="text-base font-semibold">Sao lưu & Phục hồi dữ liệu</h2>
+              <h2 className="text-base font-semibold text-[var(--text)]">Sao lưu & Phục hồi dữ liệu</h2>
               <p className={muted}>Xuất / nhập toàn bộ nhật ký ra tập tin JSON an toàn</p>
             </div>
           </div>
 
-          <p className="text-xs text-slate-600 dark:text-slate-300">
+          <p className="text-xs text-[var(--text-muted)] leading-relaxed">
             Dữ liệu được lưu trong trình duyệt của máy bạn. Hãy tải bản sao lưu định kỳ để không bị mất khi xóa lịch sử web hoặc chuyển sang thiết bị khác.
           </p>
 
@@ -457,7 +543,7 @@ export default function SettingsPage() {
               type="button"
               disabled={isExporting}
               onClick={handleExport}
-              className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-3.5 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-brand-600 disabled:opacity-50 active:scale-95"
+              className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-[var(--border-strong)] bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] shadow-[1.5px_2px_0px_var(--border-strong)] hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 transition-all"
             >
               <FileDown size={15} />
               {isExporting ? 'Đang xuất...' : 'Xuất dữ liệu (JSON)'}
@@ -466,7 +552,7 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-white px-3.5 py-2 text-xs font-semibold text-brand-700 shadow-2xs hover:bg-brand-50 active:scale-95 dark:border-white/15 dark:bg-white/10 dark:text-brand-200 dark:hover:bg-white/15"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-4 py-2 text-xs font-semibold text-[var(--text)] hover:border-[var(--border-strong)] active:scale-95 transition-all"
             >
               <FileUp size={15} /> Nhập dữ liệu (JSON)
             </button>
@@ -480,7 +566,7 @@ export default function SettingsPage() {
           </div>
 
           {importStatus && (
-            <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <div className="flex items-center gap-2 rounded-2xl bg-[var(--success)]/15 border border-[var(--success)]/30 px-3.5 py-2 text-xs font-medium text-[var(--success)]">
               <Check size={14} className="shrink-0" />
               <span>{importStatus}</span>
             </div>
@@ -490,11 +576,11 @@ export default function SettingsPage() {
         {/* Mục Nhắc nhở hằng ngày */}
         <section className="card space-y-5">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-brand-100 text-brand-600 dark:bg-white/10 dark:text-brand-300">
+            <div className="flex size-10 items-center justify-center rounded-2xl bg-[var(--surface-2)] text-[var(--accent)] border border-[var(--border)]">
               <BellRing size={20} />
             </div>
             <div className="flex-1">
-              <h2 className="text-base font-semibold">Nhắc nhở hằng ngày</h2>
+              <h2 className="text-base font-semibold text-[var(--text)]">Nhắc nhở hằng ngày</h2>
               <p className={muted}>Thông báo “Hôm nay bạn thế nào?” để duy trì thói quen</p>
             </div>
             <button
@@ -505,21 +591,21 @@ export default function SettingsPage() {
               aria-label="Bật nhắc nhở hằng ngày"
               disabled={loading}
               onClick={toggle}
-              className={`relative h-7 w-12 rounded-full transition-colors ${
-                settings.enabled ? 'bg-brand-500' : 'bg-slate-300 dark:bg-white/20'
+              className={`relative h-7 w-12 rounded-full transition-colors border border-[var(--border)] ${
+                settings.enabled ? 'bg-[var(--accent)]' : 'bg-[var(--surface)]'
               }`}
             >
               <span
-                className={`absolute top-0.5 left-0.5 size-6 rounded-full bg-white shadow transition-transform ${
-                  settings.enabled ? 'translate-x-5' : ''
+                className={`absolute top-0.5 left-0.5 size-5.5 rounded-full bg-[var(--surface)] border border-[var(--border)] shadow-xs transition-transform ${
+                  settings.enabled ? 'translate-x-5 bg-white' : ''
                 }`}
               />
             </button>
           </div>
 
           {/* Chọn giờ nhắc */}
-          <div className="flex items-center justify-between rounded-2xl bg-brand-50/50 p-3.5 dark:bg-white/5">
-            <label htmlFor="reminder-time" className="text-sm font-medium">
+          <div className="flex items-center justify-between rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-3.5">
+            <label htmlFor="reminder-time" className="text-sm font-medium text-[var(--text)]">
               Giờ nhắc hằng ngày
             </label>
             <input
@@ -528,18 +614,18 @@ export default function SettingsPage() {
               value={settings.time}
               disabled={!settings.enabled}
               onChange={(e) => changeTime(e.target.value)}
-              className="rounded-xl border border-brand-200 bg-white px-3 py-1.5 text-sm font-semibold outline-none transition-colors focus:border-brand-500 disabled:opacity-40 dark:border-white/20 dark:bg-white/10"
+              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-sm font-semibold text-[var(--text)] outline-none transition-colors focus:border-[var(--accent)] disabled:opacity-40"
             />
           </div>
 
-          {/* Ghi chú rõ ràng về việc tab đang mở */}
-          <div className="flex items-start gap-2.5 rounded-2xl border border-amber-200 bg-amber-50/70 p-3.5 text-xs leading-relaxed text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300">
-            <Info size={16} className="mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" />
+          {/* Ghi chú về việc tab đang mở */}
+          <div className="flex items-start gap-2.5 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3.5 text-xs leading-relaxed text-[var(--text-muted)]">
+            <Info size={16} className="mt-0.5 shrink-0 text-[var(--accent)]" />
             <div>
-              <p className="font-semibold">Lưu ý về cơ chế thông báo:</p>
+              <p className="font-semibold text-[var(--text)]">Lưu ý về cơ chế thông báo:</p>
               <p className="mt-0.5">
-                Ứng dụng hoạt động độc lập và lưu trữ dữ liệu tại máy (không có máy chủ/backend).
-                Do đó, <strong>thông báo hệ thống của trình duyệt chỉ kích hoạt khi tab trang web đang được mở</strong> (hoặc đang mở ở chế độ nền). Nếu chưa check-in trong ngày, web sẽ luôn hiển thị banner nhắc nhở nổi bật ở đầu trang mỗi khi bạn mở ứng dụng.
+                Ứng dụng hoạt động độc lập và lưu trữ dữ liệu tại máy.
+                Do đó, <strong>thông báo hệ thống của trình duyệt chỉ kích hoạt khi tab trang web đang được mở</strong>. Nếu chưa check-in trong ngày, web sẽ luôn hiển thị banner nhắc nhở nổi bật ở đầu trang mỗi khi bạn mở ứng dụng.
               </p>
             </div>
           </div>
@@ -547,18 +633,18 @@ export default function SettingsPage() {
           {/* Tình trạng quyền & Nút gửi thử */}
           <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-xs">
-              <span className="font-medium text-slate-600 dark:text-slate-300">Quyền thông báo: </span>
+              <span className="font-medium text-[var(--text-muted)]">Quyền thông báo: </span>
               {permission === 'granted' && (
-                <span className="font-medium text-emerald-600 dark:text-emerald-400">Đã cho phép ✓</span>
+                <span className="font-medium text-[var(--success)]">Đã cho phép ✓</span>
               )}
               {permission === 'denied' && (
-                <span className="font-medium text-rose-500">Đang bị chặn trong trình duyệt</span>
+                <span className="font-medium text-[var(--danger)]">Đang bị chặn trong trình duyệt</span>
               )}
               {permission === 'default' && (
-                <span className="text-slate-500">Chưa cấp quyền (sẽ hỏi khi bật nhắc nhở)</span>
+                <span className="text-[var(--text-muted)]">Chưa cấp quyền (sẽ hỏi khi bật nhắc nhở)</span>
               )}
               {permission === 'unsupported' && (
-                <span className="text-slate-500">Trình duyệt không hỗ trợ</span>
+                <span className="text-[var(--text-muted)]">Trình duyệt không hỗ trợ</span>
               )}
             </div>
 
@@ -566,11 +652,11 @@ export default function SettingsPage() {
               id="reminder-test"
               type="button"
               onClick={handleTestNotification}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-brand-200 bg-white px-3.5 py-2 text-xs font-semibold text-brand-700 shadow-2xs hover:bg-brand-50 active:scale-95 dark:border-white/15 dark:bg-white/10 dark:text-brand-200 dark:hover:bg-white/15"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-3.5 py-2 text-xs font-semibold text-[var(--text)] hover:border-[var(--border-strong)] active:scale-95 transition-all"
             >
               {testSent ? (
                 <>
-                  <Check size={14} className="text-emerald-500" />
+                  <Check size={14} className="text-[var(--success)]" />
                   Đã phát thông báo!
                 </>
               ) : (
@@ -586,17 +672,17 @@ export default function SettingsPage() {
         {/* Mục Cài đặt PWA lên màn hình chính */}
         <section className="card space-y-3">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-brand-100 text-brand-600 dark:bg-white/10 dark:text-brand-300">
+            <div className="flex size-10 items-center justify-center rounded-2xl bg-[var(--surface-2)] text-[var(--accent)] border border-[var(--border)]">
               <Smartphone size={20} />
             </div>
             <div>
-              <h2 className="text-base font-semibold">Cài đặt ứng dụng</h2>
+              <h2 className="text-base font-semibold text-[var(--text)]">Cài đặt ứng dụng</h2>
               <p className={muted}>Cài lên màn hình chính để mở nhanh như app native</p>
             </div>
           </div>
 
           {installed ? (
-            <p className="text-xs text-emerald-600 dark:text-emerald-400">
+            <p className="text-xs text-[var(--success)] font-medium">
               ✓ Junhi đã được cài đặt trên thiết bị của bạn.
             </p>
           ) : canInstall ? (
@@ -604,21 +690,21 @@ export default function SettingsPage() {
               id="install-app"
               type="button"
               onClick={install}
-              className="flex items-center gap-2 rounded-xl bg-brand-500 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-brand-600 active:scale-95"
+              className="flex items-center gap-2 rounded-full border-[1.5px] border-[var(--border-strong)] bg-[var(--accent)] px-4 py-2.5 text-xs font-semibold text-[var(--accent-contrast)] shadow-[1.5px_2px_0px_var(--border-strong)] transition-all hover:-translate-y-0.5 active:translate-y-0"
             >
               <Download size={15} /> Cài đặt Junhi lên màn hình chính
             </button>
           ) : isIos ? (
             <p className={muted}>
-              Trên iPhone/iPad: Chạm vào biểu tượng <strong>Chia sẻ (Share)</strong> trên Safari và chọn <strong>“Thêm vào MH chính (Add to Home Screen)”</strong>.
+              Trên iPhone/iPad: Chạm vào biểu tượng <strong className="text-[var(--text)]">Chia sẻ (Share)</strong> trên Safari và chọn <strong className="text-[var(--text)]">“Thêm vào MH chính (Add to Home Screen)”</strong>.
             </p>
           ) : (
             <p className={muted}>
-              Dùng menu trình duyệt (biểu tượng 3 chấm) và chọn <strong>“Cài đặt ứng dụng”</strong> hoặc <strong>“Thêm vào màn hình chính”</strong>.
+              Dùng menu trình duyệt (biểu tượng 3 chấm) và chọn <strong className="text-[var(--text)]">“Cài đặt ứng dụng”</strong> hoặc <strong className="text-[var(--text)]">“Thêm vào màn hình chính”</strong>.
             </p>
           )}
 
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-[var(--text-muted)]">
             Dữ liệu nhật ký được lưu cục bộ an toàn trong IndexedDB của thiết bị, hoàn toàn riêng tư và không tải lên máy chủ ngoài.
           </p>
         </section>

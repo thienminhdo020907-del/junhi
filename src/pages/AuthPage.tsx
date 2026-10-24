@@ -85,7 +85,7 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-dvh bg-slate-50 dark:bg-[#0f0e17] text-slate-900 dark:text-slate-100 selection:bg-brand-500 selection:text-white">
+    <div className="flex min-h-dvh bg-[var(--bg)] text-[var(--text)] selection:bg-[var(--accent)] selection:text-[var(--accent-contrast)]">
       {/* CỘT TRÁI: FORM ĐĂNG NHẬP / ĐĂNG KÝ */}
       <div className="flex w-full flex-col justify-between p-6 sm:p-10 lg:w-1/2 lg:p-14 xl:p-18">
         <div>
@@ -93,7 +93,7 @@ export default function AuthPage() {
           <div className="flex items-center justify-between">
             <Link
               to={ROUTES.today}
-              className="group inline-flex items-center gap-2 text-xs font-semibold text-slate-500 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-300"
+              className="group inline-flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)] transition-colors hover:text-[var(--accent)]"
             >
               <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" />
               <span>Về trang chủ</span>
@@ -101,7 +101,7 @@ export default function AuthPage() {
 
             <div className="flex items-center gap-2">
               <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+              <span className="text-[11px] font-medium text-[var(--text-muted)]">
                 MySQL Cloud Connected
               </span>
             </div>
@@ -113,27 +113,27 @@ export default function AuthPage() {
             <div className="mb-6 flex items-center gap-3">
               <img src="/favicon.svg" alt="Junhi" className="size-11 rounded-2xl shadow-sm" />
               <div>
-                <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                <span className="text-xl font-bold tracking-tight text-[var(--text)]">
                   {APP_NAME}
                 </span>
-                <span className="ml-2 rounded-md bg-brand-100 px-2 py-0.5 text-[10px] font-bold text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
+                <span className="ml-2 rounded-md bg-[var(--surface-2)] border border-[var(--border)] px-2 py-0.5 text-[10px] font-bold text-[var(--text)]">
                   Cloud Sync
                 </span>
               </div>
             </div>
 
             {/* Tiêu đề & Lời chào */}
-            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+            <h1 className="text-2xl font-serif italic font-extrabold tracking-tight sm:text-3xl text-[var(--text)]">
               {mode === 'login' ? 'Đăng nhập tài khoản' : 'Khởi tạo tài khoản mới'}
             </h1>
-            <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+            <p className="mt-2 text-xs leading-relaxed text-[var(--text-muted)]">
               {mode === 'login'
                 ? 'Chào mừng bạn quay lại! Nhập thông tin để tiếp tục hành trình nuôi dưỡng cảm xúc.'
                 : 'Bắt đầu thói quen check-in tâm trạng và bảo vệ dữ liệu trên đám mây miễn phí.'}
             </p>
 
-            {/* Tab chuyển đổi Đăng nhập / Đăng ký kiểu Pill quốc tế */}
-            <div className="mt-6 grid grid-cols-2 rounded-2xl bg-slate-200/60 p-1 text-xs font-semibold dark:bg-white/10">
+            {/* Tab chuyển đổi Đăng nhập / Đăng ký kiểu Pill */}
+            <div className="mt-6 grid grid-cols-2 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-1 text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => {
@@ -145,8 +145,8 @@ export default function AuthPage() {
                 }}
                 className={`rounded-xl py-2 transition-all ${
                   mode === 'login'
-                    ? 'bg-white text-slate-900 shadow-xs dark:bg-[#201d33] dark:text-white'
-                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                    ? 'bg-[var(--surface)] text-[var(--text)] shadow-xs border border-[var(--border)]'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                 }`}
               >
                 Đăng nhập
@@ -164,8 +164,8 @@ export default function AuthPage() {
                 }}
                 className={`rounded-xl py-2 transition-all ${
                   mode === 'register'
-                    ? 'bg-white text-slate-900 shadow-xs dark:bg-[#201d33] dark:text-white'
-                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                    ? 'bg-[var(--surface)] text-[var(--text)] shadow-xs border border-[var(--border)]'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                 }`}
               >
                 Tạo tài khoản
@@ -175,13 +175,13 @@ export default function AuthPage() {
             {/* Form */}
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label className="mb-1.5 block text-xs font-semibold text-[var(--text)]">
                   Địa chỉ Email
                 </label>
                 <div className="relative">
                   <Mail
                     size={17}
-                    className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400 transition-colors peer-focus:text-brand-500"
+                    className="absolute top-1/2 left-3.5 -translate-y-1/2 text-[var(--text-muted)] transition-colors peer-focus:text-[var(--accent)]"
                   />
                   <input
                     type="email"
@@ -190,14 +190,14 @@ export default function AuthPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="tenban@example.com"
                     autoComplete="email"
-                    className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pr-4 pl-10 text-sm outline-none transition-all placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-white/15 dark:bg-white/5 dark:focus:border-brand-400"
+                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] py-2.5 pr-4 pl-10 text-sm text-[var(--text)] outline-none transition-all placeholder:text-[var(--placeholder)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="mb-1.5 flex items-center justify-between">
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  <label className="text-xs font-semibold text-[var(--text)]">
                     Mật khẩu
                   </label>
                   {mode === 'login' && (
@@ -208,7 +208,7 @@ export default function AuthPage() {
                           'Tính năng đặt lại mật khẩu: Bạn có thể liên hệ quản trị viên hoặc tạo tài khoản mới nếu chưa lưu dữ liệu quan trọng.',
                         )
                       }
-                      className="text-[11px] font-medium text-brand-600 hover:underline dark:text-brand-400"
+                      className="text-[11px] font-medium text-[var(--accent)] hover:underline"
                     >
                       Quên mật khẩu?
                     </button>
@@ -217,7 +217,7 @@ export default function AuthPage() {
                 <div className="relative">
                   <Lock
                     size={17}
-                    className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400 transition-colors peer-focus:text-brand-500"
+                    className="absolute top-1/2 left-3.5 -translate-y-1/2 text-[var(--text-muted)] transition-colors peer-focus:text-[var(--accent)]"
                   />
                   <input
                     type={showPassword ? 'text' : 'password'}
@@ -227,12 +227,12 @@ export default function AuthPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Tối thiểu 6 ký tự"
                     autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                    className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pr-10 pl-10 text-sm outline-none transition-all placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-white/15 dark:bg-white/5 dark:focus:border-brand-400"
+                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] py-2.5 pr-10 pl-10 text-sm text-[var(--text)] outline-none transition-all placeholder:text-[var(--placeholder)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                    className="absolute top-1/2 right-3 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text)]"
                     title={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -242,7 +242,7 @@ export default function AuthPage() {
                 {/* Thanh đo độ mạnh mật khẩu khi Đăng ký */}
                 {mode === 'register' && password.length > 0 && (
                   <div className="mt-2 space-y-1">
-                    <div className="flex h-1.5 w-full gap-1 overflow-hidden rounded-full bg-slate-100 dark:bg-white/10">
+                    <div className="flex h-1.5 w-full gap-1 overflow-hidden rounded-full bg-[var(--surface-2)]">
                       <div
                         className={`h-full transition-all duration-300 ${
                           strength.score >= 1 ? strength.color : 'opacity-0'
@@ -262,9 +262,9 @@ export default function AuthPage() {
                         style={{ width: '33.34%' }}
                       />
                     </div>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-[var(--text-muted)]">
                       Độ mạnh mật khẩu:{' '}
-                      <span className="font-semibold text-slate-700 dark:text-slate-200">
+                      <span className="font-semibold text-[var(--text)]">
                         {strength.text}
                       </span>
                     </p>
@@ -279,9 +279,9 @@ export default function AuthPage() {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="size-4 rounded-md border-slate-300 text-brand-600 focus:ring-brand-500 dark:border-white/20 dark:bg-white/10"
+                    className="size-4 rounded-md border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)] bg-[var(--surface)]"
                   />
-                  <span className="text-xs text-slate-600 dark:text-slate-400">
+                  <span className="text-xs text-[var(--text-muted)]">
                     Ghi nhớ phiên đăng nhập (30 ngày)
                   </span>
                 </label>
@@ -289,14 +289,14 @@ export default function AuthPage() {
 
               {/* Thông báo lỗi */}
               {error && (
-                <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-medium text-rose-600 dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-400 animate-in fade-in">
+                <div className="rounded-xl border border-rose-300 bg-rose-50 p-3 text-xs font-medium text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/40 dark:text-rose-200 animate-in fade-in">
                   {error}
                 </div>
               )}
 
               {/* Thông báo thành công */}
               {successMsg && (
-                <div className="flex items-center gap-2 rounded-xl bg-emerald-50 p-3 text-xs font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 animate-in fade-in">
+                <div className="flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 p-3 text-xs font-medium text-emerald-800 dark:border-emerald-800/40 dark:bg-emerald-950/40 dark:text-emerald-200 animate-in fade-in">
                   <Check size={16} className="shrink-0" />
                   <span>{successMsg}</span>
                 </div>
@@ -306,11 +306,11 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={loading || Boolean(successMsg)}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 py-3 text-sm font-semibold text-white shadow-md shadow-brand-500/25 transition-all hover:bg-brand-600 hover:shadow-lg hover:shadow-brand-500/30 disabled:opacity-50 active:scale-98"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] py-3 text-sm font-semibold text-[var(--accent-contrast)] shadow-md transition-all hover:opacity-90 disabled:opacity-50 active:scale-98"
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
-                    <span className="size-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                     Đang xử lý...
                   </span>
                 ) : mode === 'login' ? (
@@ -325,8 +325,8 @@ export default function AuthPage() {
               </button>
             </form>
 
-            <div className="mt-8 border-t border-slate-200/80 pt-5 text-center dark:border-white/10">
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+            <div className="mt-8 border-t border-[var(--border)] pt-5 text-center">
+              <p className="text-xs text-[var(--text-muted)]">
                 {mode === 'login' ? 'Chưa có tài khoản Junhi?' : 'Đã có tài khoản từ trước?'}
                 <button
                   type="button"
@@ -344,7 +344,7 @@ export default function AuthPage() {
                       { replace: true },
                     )
                   }}
-                  className="ml-1.5 font-bold text-brand-600 hover:underline dark:text-brand-400"
+                  className="ml-1.5 font-bold text-[var(--accent)] hover:underline"
                 >
                   {mode === 'login' ? 'Đăng ký miễn phí' : 'Đăng nhập ngay'}
                 </button>
@@ -354,7 +354,7 @@ export default function AuthPage() {
         </div>
 
         {/* Footer bản quyền */}
-        <div className="mt-10 text-center text-[11px] text-slate-400">
+        <div className="mt-10 text-center text-[11px] text-[var(--text-muted)] opacity-75">
           <p>© 2026 {APP_NAME} Mood Journal. Quyền riêng tư & dữ liệu được bảo vệ an toàn.</p>
         </div>
       </div>

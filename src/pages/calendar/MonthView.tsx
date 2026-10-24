@@ -20,13 +20,13 @@ export default function MonthView({ date, onOpenDay }: Props) {
   const [today] = useState(() => new Date())
 
   return (
-    <div className="relative rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-6 shadow-[3px_4px_0px_rgba(43,39,36,0.06)] dark:border-white/20 dark:bg-[#282421]">
+    <div className="relative rounded-3xl border-[1.5px] border-[var(--border)] bg-[var(--surface)] p-6 shadow-[3px_4px_0px_rgba(0,0,0,0.05)]">
       {/* Miếng washi tape trang trí trên đầu lịch */}
       <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-        <DoodleWashiTape color="#CFE3DD" />
+        <DoodleWashiTape color="var(--pastel-mint)" />
       </div>
 
-      <div className="mb-3 grid grid-cols-7 gap-2 text-center font-mono text-[11px] font-bold text-[#7A736B] dark:text-[#A8A199] tracking-wider uppercase">
+      <div className="mb-3 grid grid-cols-7 gap-2 text-center font-mono text-[11px] font-bold text-[var(--text-muted)] tracking-wider uppercase">
         {WEEKDAY_SHORT.map((w) => (
           <span key={w}>{w}</span>
         ))}
@@ -56,14 +56,14 @@ export default function MonthView({ date, onOpenDay }: Props) {
               aria-label={`Ngày ${i + 1}`}
               className={`relative flex aspect-square flex-col items-center justify-center rounded-2xl border-[1.5px] font-sans text-xs sm:text-sm font-medium transition-all ${
                 isToday
-                  ? 'border-[#2B2724] ring-2 ring-[#2B2724] shadow-[2px_2px_0px_#2B2724] dark:border-white dark:ring-white'
-                  : 'border-[#2B2724]/15 hover:border-[#2B2724] hover:shadow-[1.5px_2px_0px_#2B2724] dark:border-white/15'
-              } ${e ? 'text-[#2B2724] font-bold' : 'text-[#7A736B] dark:text-[#A8A199]'}`}
+                  ? 'border-[var(--border-strong)] ring-2 ring-[var(--border-strong)] shadow-[2px_2px_0px_var(--border-strong)]'
+                  : 'border-[var(--border)] hover:border-[var(--border-strong)] hover:shadow-[1.5px_2px_0px_var(--border-strong)]'
+              } ${e ? 'text-[var(--text)] font-bold' : 'text-[var(--text-muted)]'}`}
               style={{ background: e ? moodColor(e.mood) : 'var(--empty-cell)' }}
             >
               <span>{i + 1}</span>
               {e && (
-                <span className="absolute bottom-1 size-1 rounded-full bg-[#2B2724]/50" />
+                <span className="absolute bottom-1 size-1 rounded-full bg-[var(--text)]/50" />
               )}
             </motion.button>
           )

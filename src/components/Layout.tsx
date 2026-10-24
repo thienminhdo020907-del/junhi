@@ -64,15 +64,15 @@ export default function Layout() {
   }
 
   return (
-    <div className="relative min-h-dvh flex flex-col bg-[#F3F1EC] text-[#2B2724] dark:bg-[#1F1C1A] dark:text-[#EDE8E3] transition-colors selection:bg-[#F4C6D0] selection:text-[#2B2724]">
-      {/* Các họa tiết doodle vẽ tay mờ nằm rải rác nền */}
-      <div className="pointer-events-none fixed top-16 left-4 text-[#2B2724]/8 dark:text-white/5 -z-10 hidden md:block">
+    <div className="relative min-h-screen min-h-dvh w-full flex flex-col bg-[var(--bg)] text-[var(--text)] transition-colors selection:bg-[var(--pastel-pink)] selection:text-[var(--text)]">
+      {/* Các họa tiết doodle vẽ tay mờ nằm rải rác nền, giảm độ sáng ở dark mode để không chói */}
+      <div className="pointer-events-none fixed top-16 left-4 text-[var(--text)]/6 dark:text-[var(--text)]/4 -z-10 hidden md:block">
         <DoodleCloud size={70} />
       </div>
-      <div className="pointer-events-none fixed top-44 right-8 text-[#F6E3A8]/20 -z-10 hidden md:block">
+      <div className="pointer-events-none fixed top-44 right-8 text-[var(--pastel-butter)]/25 dark:text-[var(--pastel-butter)]/15 -z-10 hidden md:block">
         <DoodleStar size={40} />
       </div>
-      <div className="pointer-events-none fixed bottom-24 left-10 text-[#BFDDCB]/20 -z-10 hidden md:block">
+      <div className="pointer-events-none fixed bottom-24 left-10 text-[var(--pastel-mint)]/25 dark:text-[var(--pastel-mint)]/15 -z-10 hidden md:block">
         <DoodleMoon size={45} />
       </div>
 

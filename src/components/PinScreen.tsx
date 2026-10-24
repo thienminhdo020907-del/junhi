@@ -63,19 +63,19 @@ export default function PinScreen({ onUnlock }: PinScreenProps) {
   })
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 p-4 backdrop-blur-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg)]/95 p-4 backdrop-blur-xl">
       <div className="flex w-full max-w-xs flex-col items-center text-center">
-        <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-brand-500/20 text-brand-400 ring-1 ring-brand-500/30">
+        <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-[var(--surface-2)] text-[var(--accent)] border border-[var(--border)]">
           <Lock size={28} />
         </div>
 
-        <h2 className="text-xl font-bold text-white">Nhật ký đang khóa</h2>
-        <p className="mt-1 text-xs text-slate-400">Nhập mã PIN để mở khóa ứng dụng</p>
+        <h2 className="text-xl font-bold text-[var(--text)]">Nhật ký đang khóa</h2>
+        <p className="mt-1 text-xs text-[var(--text-muted)]">Nhập mã PIN để mở khóa ứng dụng</p>
 
         {/* Các chấm hiển thị mã PIN */}
         <div
           className={`my-7 flex items-center justify-center gap-3.5 transition-transform ${
-            error ? 'animate-bounce text-red-400' : ''
+            error ? 'animate-bounce text-[var(--danger)]' : ''
           }`}
         >
           {Array.from({ length: 4 }).map((_, i) => (
@@ -84,15 +84,15 @@ export default function PinScreen({ onUnlock }: PinScreenProps) {
               className={`size-3.5 rounded-full border transition-all ${
                 i < pin.length
                   ? error
-                    ? 'border-red-500 bg-red-500'
-                    : 'border-brand-400 bg-brand-400 scale-110 shadow-sm shadow-brand-400/50'
-                  : 'border-white/20 bg-white/5'
+                    ? 'border-[var(--danger)] bg-[var(--danger)]'
+                    : 'border-[var(--accent)] bg-[var(--accent)] scale-110 shadow-sm'
+                  : 'border-[var(--border)] bg-[var(--surface-2)]'
               }`}
             />
           ))}
         </div>
 
-        {error && <p className="mb-3 text-xs font-medium text-red-400">Mã PIN không chính xác</p>}
+        {error && <p className="mb-3 text-xs font-medium text-[var(--danger)]">Mã PIN không chính xác</p>}
 
         {/* Bàn phím số */}
         <div className="grid w-full grid-cols-3 gap-3">
@@ -101,7 +101,7 @@ export default function PinScreen({ onUnlock }: PinScreenProps) {
               key={n}
               type="button"
               onClick={() => handleDigit(n)}
-              className="flex aspect-square items-center justify-center rounded-2xl bg-white/10 text-xl font-semibold text-white transition-all hover:bg-white/15 active:scale-90"
+              className="flex aspect-square items-center justify-center rounded-2xl bg-[var(--surface)] border border-[var(--border)] text-xl font-semibold text-[var(--text)] transition-all hover:border-[var(--border-strong)] hover:bg-[var(--surface-2)] active:scale-90"
             >
               {n}
             </button>
@@ -110,7 +110,7 @@ export default function PinScreen({ onUnlock }: PinScreenProps) {
           <button
             type="button"
             onClick={() => handleDigit('0')}
-            className="flex aspect-square items-center justify-center rounded-2xl bg-white/10 text-xl font-semibold text-white transition-all hover:bg-white/15 active:scale-90"
+            className="flex aspect-square items-center justify-center rounded-2xl bg-[var(--surface)] border border-[var(--border)] text-xl font-semibold text-[var(--text)] transition-all hover:border-[var(--border-strong)] hover:bg-[var(--surface-2)] active:scale-90"
           >
             0
           </button>
@@ -118,7 +118,7 @@ export default function PinScreen({ onUnlock }: PinScreenProps) {
             type="button"
             onClick={handleDelete}
             aria-label="Xóa"
-            className="flex aspect-square items-center justify-center rounded-2xl bg-white/5 text-slate-400 transition-all hover:bg-white/10 hover:text-white active:scale-90"
+            className="flex aspect-square items-center justify-center rounded-2xl bg-[var(--surface)] border border-[var(--border)] text-[var(--text-muted)] transition-all hover:text-[var(--text)] hover:border-[var(--border-strong)] active:scale-90"
           >
             <Delete size={20} />
           </button>
@@ -128,7 +128,7 @@ export default function PinScreen({ onUnlock }: PinScreenProps) {
           <button
             type="button"
             onClick={() => checkPin(pin)}
-            className="mt-6 flex items-center gap-1.5 text-xs text-brand-300 underline"
+            className="mt-6 flex items-center gap-1.5 text-xs text-[var(--accent)] underline"
           >
             <Unlock size={13} /> Nhấn để mở khóa
           </button>
