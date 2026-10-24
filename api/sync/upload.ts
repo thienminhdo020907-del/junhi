@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { verifyRequestUser } from '../_auth'
-import { ensureTablesExist, getDbPool } from '../_db'
+import { verifyRequestUser } from '../_auth.js'
+import { ensureTablesExist, getDbPool } from '../_db.js'
 
 interface EntryPayload {
   date: string

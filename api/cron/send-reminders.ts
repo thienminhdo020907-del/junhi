@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import nodemailer from 'nodemailer'
-import { ensureTablesExist, getDbPool } from '../_db'
+import { ensureTablesExist, getDbPool } from '../_db.js'
 
 function getVietnamCurrentTime(): { dateStr: string; timeStr: string; hour: number } {
   const now = new Date()

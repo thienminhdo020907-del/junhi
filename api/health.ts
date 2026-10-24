@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { ensureTablesExist, getDbPool } from './_db'
+import { ensureTablesExist, getDbPool } from './_db.js'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
