@@ -121,8 +121,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // Chuẩn hóa path URL (ví dụ: "/api/auth/register?foo=bar" -> "/api/auth/register")
-  const rawUrl = req.url || '/'
-  const pathname = rawUrl.split('?')[0].replace(/\/+$/, '') || '/'
+  let pathname = (req.url || '/').split('?')[0].replace(/\/+$/, '') || '/'
+  if (req.query?.path) {
+    const subpath = Array.isArray(req.query.path) ? req.query.path.join('/') : String(req.query.path)
+    if (subpath && !pathname.includes(subpath)) {
+      pathname = `/api/${subpath}`
+    }
+  }
 
   try {
     // 1. HEALTH CHECK
