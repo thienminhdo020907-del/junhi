@@ -8,13 +8,33 @@ export function getDbPool(): mysql.Pool {
   const connectionUri = process.env.MYSQL_URL || process.env.DATABASE_URL
 
   if (connectionUri) {
-    pool = mysql.createPool({
-      uri: connectionUri,
-      ssl: process.env.MYSQL_SSL === 'false' ? undefined : { rejectUnauthorized: false },
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0,
-    })
+    try {
+      const parsed = new URL(connectionUri.includes('://') ? connectionUri : `mysql://${connectionUri}`)
+      let dbName = parsed.pathname.replace(/^\//, '')
+      if (!dbName || dbName === 'sys') {
+        dbName = process.env.MYSQL_DATABASE || 'test'
+      }
+      pool = mysql.createPool({
+        host: parsed.hostname,
+        port: Number(parsed.port) || 3306,
+        user: decodeURIComponent(parsed.username),
+        password: decodeURIComponent(parsed.password),
+        database: dbName,
+        ssl: process.env.MYSQL_SSL === 'false' ? undefined : { rejectUnauthorized: false },
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0,
+      })
+    } catch {
+      pool = mysql.createPool({
+        uri: connectionUri,
+        database: process.env.MYSQL_DATABASE || 'test',
+        ssl: process.env.MYSQL_SSL === 'false' ? undefined : { rejectUnauthorized: false },
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0,
+      })
+    }
   } else {
     pool = mysql.createPool({
       host: process.env.MYSQL_HOST || '127.0.0.1',
