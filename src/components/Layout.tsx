@@ -8,6 +8,8 @@ import ReminderManager from './ReminderManager'
 import ShortcutsModal from './ShortcutsModal'
 import Sidebar from './Sidebar'
 
+import RetroWin95Wrapper from './RetroWin95Wrapper'
+
 export default function Layout() {
   const navigate = useNavigate()
   const { isPinEnabled, loading } = usePinLock()
@@ -62,17 +64,19 @@ export default function Layout() {
   }
 
   return (
-    <div className="flex min-h-dvh">
-      <Sidebar />
-      <main className="min-w-0 flex-1 px-10 pt-10 pb-12 max-lg:px-8 max-md:px-5 max-md:pt-[calc(1.5rem+env(safe-area-inset-top))] max-md:pb-28">
-        <div className="mx-auto w-full max-w-5xl">
-          <ReminderManager />
-          <Outlet />
-        </div>
-      </main>
-      <BottomNav />
-      <ShortcutsModal />
-    </div>
+    <RetroWin95Wrapper>
+      <div className="flex min-h-dvh">
+        <Sidebar />
+        <main className="min-w-0 flex-1 px-4 sm:px-8 pt-6 pb-12 max-md:pb-28">
+          <div className="mx-auto w-full max-w-5xl">
+            <ReminderManager />
+            <Outlet />
+          </div>
+        </main>
+        <BottomNav />
+        <ShortcutsModal />
+      </div>
+    </RetroWin95Wrapper>
   )
 }
 

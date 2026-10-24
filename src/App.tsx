@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Layout from '@/components/Layout'
+import { ThemeProvider } from '@/context/ThemeContext'
 import { AuthProvider } from '@/context/AuthContext'
 import { ROUTES } from '@/constants/app'
 import AuthPage from '@/pages/AuthPage'
@@ -15,7 +16,8 @@ const StatsPage = lazy(() => import('@/pages/StatsPage'))
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
         <Routes>
           {/* Trang Đăng nhập / Đăng ký riêng biệt */}
           <Route path="/auth/login" element={<AuthPage />} />
@@ -38,6 +40,7 @@ export default function App() {
           </Route>
         </Routes>
       </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }

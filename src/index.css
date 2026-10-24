@@ -123,3 +123,46 @@ body {
   animation: energy-fire-flicker 1.5s infinite ease-in-out;
   background: radial-gradient(circle at 50% 0%, rgba(254, 215, 170, 0.3), transparent 70%);
 }
+
+/* ==========================================================================
+   CHỦ ĐỀ RETRO WINDOWS 95 / Y2K MS PAINT THEME
+   ========================================================================== */
+
+.theme-win95 {
+  --empty-cell: #d4d0c8;
+}
+
+.theme-win95 body {
+  background-color: #e8f3fe !important;
+  color: #000000 !important;
+}
+
+.theme-win95 .card {
+  background-color: #c0c0c0 !important;
+  color: #000000 !important;
+  border-top: 2px solid #ffffff !important;
+  border-left: 2px solid #ffffff !important;
+  border-right: 2px solid #000000 !important;
+  border-bottom: 2px solid #000000 !important;
+  box-shadow: inset 1px 1px 0px #dfdfdf, inset -1px -1px 0px #808080 !important;
+  border-radius: 0px !important;
+}
+
+.theme-win95 button {
+  border-radius: 0px !important;
+}
+
+.theme-win95 textarea,
+.theme-win95 input[type="text"],
+.theme-win95 input[type="password"],
+.theme-win95 input[type="email"] {
+  border-top: 2px solid #808080 !important;
+  border-left: 2px solid #808080 !important;
+  border-right: 2px solid #ffffff !important;
+  border-bottom: 2px solid #ffffff !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-radius: 0px !important;
+  box-shadow: inset 1px 1px 0px #000000 !important;
+}
+

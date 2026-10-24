@@ -14,10 +14,12 @@ import {
   Lock,
   LogOut,
   Mail,
+  Palette,
   RefreshCw,
   Shield,
   ShieldCheck,
   Smartphone,
+  Sparkles,
   Trash2,
   Volume2,
 } from 'lucide-react'
@@ -26,6 +28,7 @@ import PageHeader from '@/components/PageHeader'
 import PinSetupModal from '@/components/PinSetupModal'
 import { ROUTES } from '@/constants/app'
 import { useAuth } from '@/context/useAuth'
+import { useTheme } from '@/context/useTheme'
 import { useInstallPrompt } from '@/hooks/useInstallPrompt'
 import { usePinLock } from '@/db/usePinLock'
 import { useReminder } from '@/db/useReminder'
@@ -48,6 +51,7 @@ export default function SettingsPage() {
 
   // Cloud Auth & Sync
   const { user, isSyncing, lastSyncedAt, syncData, logout } = useAuth()
+  const { theme, setTheme } = useTheme()
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [syncFeedback, setSyncFeedback] = useState<string | null>(null)
   const [emailReminderEnabled, setEmailReminderEnabled] = useState(false)
@@ -185,6 +189,62 @@ export default function SettingsPage() {
       <PageHeader title="Cài đặt" subtitle="Tuỳ chỉnh đám mây, nhắc nhở & bảo mật" />
 
       <div className="max-w-2xl space-y-5">
+        {/* Tùy chọn Giao diện: Hiện đại vs Retro Win95 MS Paint */}
+        <section className="card space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-violet-100 text-violet-600 dark:bg-white/10 dark:text-violet-300">
+              <Palette size={20} />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-base font-semibold">Chủ đề giao diện (Theme)</h2>
+              <p className={muted}>Chọn phong cách hiển thị bạn yêu thích</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            {/* Chế độ Hiện đại */}
+            <button
+              type="button"
+              onClick={() => setTheme('modern')}
+              className={`flex flex-col items-start rounded-2xl border p-4 text-left transition-all ${
+                theme === 'modern'
+                  ? 'border-brand-500 bg-brand-50/60 ring-2 ring-brand-500/20 dark:bg-brand-950/20'
+                  : 'border-brand-100/80 bg-white/40 hover:bg-white/80 dark:border-white/10 dark:bg-white/5'
+              }`}
+            >
+              <div className="mb-2 flex size-8 items-center justify-center rounded-xl bg-brand-500 text-white shadow-xs">
+                <Sparkles size={16} />
+              </div>
+              <p className="text-sm font-bold">Hiện đại (Modern)</p>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                Giao diện tinh tế, thanh thoát với Dark mode và chuyển động mượt mà.
+              </p>
+            </button>
+
+            {/* Chế độ Retro Win95 MS Paint */}
+            <button
+              type="button"
+              onClick={() => setTheme('win95')}
+              className={`flex flex-col items-start rounded-2xl border p-4 text-left transition-all ${
+                theme === 'win95'
+                  ? 'border-[#000080] bg-slate-200/80 ring-2 ring-[#000080]/30 shadow-sm'
+                  : 'border-brand-100/80 bg-white/40 hover:bg-white/80 dark:border-white/10 dark:bg-white/5'
+              }`}
+            >
+              <div className="mb-2 flex size-8 items-center justify-center rounded-xl bg-gradient-to-r from-[#000080] to-[#1084d0] text-white shadow-xs">
+                <span className="text-sm">🎨</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <p className="text-sm font-bold">Retro Win95 / Paint</p>
+                <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[10px] font-bold text-amber-700">Y2K</span>
+              </div>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                Phong cách Windows 95, bảng màu MS Paint hoài niệm với chú ếch và cá vàng.
+              </p>
+            </button>
+          </div>
+        </section>
+
         {/* Mục Tài khoản & Đồng bộ đám mây (MySQL Backend) */}
         <section className="card space-y-4">
           <div className="flex items-center gap-3">
