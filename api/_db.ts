@@ -38,41 +38,46 @@ export async function ensureTablesExist(): Promise<void> {
   if (initialized) return
   const db = getDbPool()
 
-  await db.query(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      email VARCHAR(255) NOT NULL UNIQUE,
-      password_hash VARCHAR(255) NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-  `)
+  try {
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `)
 
-  await db.query(`
-    CREATE TABLE IF NOT EXISTS entries (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT NOT NULL,
-      date VARCHAR(10) NOT NULL,
-      mood TINYINT NOT NULL,
-      energy TINYINT NOT NULL,
-      sleep_hours DECIMAL(4,2) NOT NULL,
-      tags JSON,
-      content TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      UNIQUE KEY uq_user_date (user_id, date)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-  `)
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS entries (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        date VARCHAR(10) NOT NULL,
+        mood TINYINT NOT NULL,
+        energy TINYINT NOT NULL,
+        sleep_hours DECIMAL(4,2) NOT NULL,
+        tags JSON,
+        content TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        UNIQUE KEY uq_user_date (user_id, date)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `)
 
-  await db.query(`
-    CREATE TABLE IF NOT EXISTS user_settings (
-      user_id INT PRIMARY KEY,
-      reminder_enabled BOOLEAN DEFAULT FALSE,
-      reminder_time VARCHAR(5) DEFAULT '21:00',
-      timezone VARCHAR(50) DEFAULT 'Asia/Ho_Chi_Minh',
-      last_notified_date VARCHAR(10) DEFAULT '',
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-  `)
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS user_settings (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT UNIQUE,
+        reminder_enabled BOOLEAN DEFAULT FALSE,
+        reminder_time VARCHAR(5) DEFAULT '21:00',
+        timezone VARCHAR(50) DEFAULT 'Asia/Ho_Chi_Minh',
+        last_notified_date VARCHAR(10) DEFAULT '',
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `)
+  } catch (tableErr) {
+    console.warn('Lưu ý: Không thể tự động chạy CREATE TABLE (có thể do bảng đã tồn tại hoặc tài khoản không có quyền CREATE):', tableErr)
+  }
 
   initialized = true
 }
