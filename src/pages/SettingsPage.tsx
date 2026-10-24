@@ -372,7 +372,7 @@ export default function SettingsPage() {
           )}
 
           <p className="text-[11px] text-slate-400">
-            Mã PIN được mã hóa SHA-256 an toàn trong bộ nhớ máy. Khi mở lại tab hoặc khởi động ứng dụng, bạn sẽ cần nhập PIN để xem nhật ký.
+            Nhật ký là chuyện riêng tư. Khóa bằng mã PIN, không ai khác mở được, kể cả khi người khác cầm máy bạn.
           </p>
         </section>
 

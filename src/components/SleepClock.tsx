@@ -251,9 +251,9 @@ export default function SleepClock({ value, onChange }: SleepClockProps) {
       <div className="relative z-1 mb-3 flex items-center justify-between">
         <div>
           <p className="text-xs font-semibold tracking-wider text-indigo-300 uppercase">
-            Chu kỳ giấc ngủ
+            Hiểu giấc ngủ của bạn
           </p>
-          <p className="text-sm font-medium text-white/90">Đồng hồ tròn 24 giờ</p>
+          <p className="text-sm font-medium text-white/90">Kéo hai núm trăng và mặt trời</p>
         </div>
 
         {/* Trạng thái giấc ngủ */}

@@ -386,9 +386,9 @@ export default function AuthPage() {
               <div className="mb-2 flex size-8 items-center justify-center rounded-xl bg-violet-500/30 text-violet-300">
                 <Moon size={18} />
               </div>
-              <h2 className="text-sm font-bold">Chu kỳ giấc ngủ 24h</h2>
-              <p className="mt-1 text-xs text-slate-300">
-                Đồng hồ sinh học SVG trực quan, phân tích thời gian ngủ lý tưởng.
+              <h2 className="text-sm font-bold">Hiểu giấc ngủ của bạn</h2>
+              <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                Kéo hai núm trăng và mặt trời, thấy ngay hôm qua bạn ngủ đủ hay thiếu. Sau vài tuần, bạn sẽ biết giờ ngủ nào giúp mình tỉnh táo nhất.
               </p>
             </div>
 
@@ -396,9 +396,9 @@ export default function AuthPage() {
               <div className="mb-2 flex size-8 items-center justify-center rounded-xl bg-emerald-500/30 text-emerald-300">
                 <TrendingUp size={18} />
               </div>
-              <h2 className="text-sm font-bold">Biểu đồ xu hướng</h2>
-              <p className="mt-1 text-xs text-slate-300">
-                Thống kê chuỗi liên tục, ngày tốt nhất trong tuần và tag cảm xúc.
+              <h2 className="text-sm font-bold">Nhìn lại cảm xúc theo năm tháng</h2>
+              <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                Mỗi ngày một ô màu. Cuối năm, bạn có cả bức tranh: tháng nào vui, tuần nào nặng nề, và điều gì thường kéo tâm trạng lên.
               </p>
             </div>
 
@@ -406,9 +406,9 @@ export default function AuthPage() {
               <div className="mb-2 flex size-8 items-center justify-center rounded-xl bg-brand-500/30 text-brand-300">
                 <Cloud size={18} />
               </div>
-              <h2 className="text-sm font-bold">Đồng bộ MySQL</h2>
-              <p className="mt-1 text-xs text-slate-300">
-                Lưu trữ đám mây tự động, chuyển đổi liền mạch trên máy tính & điện thoại.
+              <h2 className="text-sm font-bold">Luôn ở bên bạn, trên mọi thiết bị</h2>
+              <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                Viết trên máy tính buổi tối, đọc lại trên điện thoại sáng hôm sau. Nhật ký của bạn luôn sẵn sàng, không lo mất.
               </p>
             </div>
 
@@ -416,9 +416,9 @@ export default function AuthPage() {
               <div className="mb-2 flex size-8 items-center justify-center rounded-xl bg-amber-500/30 text-amber-300">
                 <ShieldCheck size={18} />
               </div>
-              <h2 className="text-sm font-bold">Khóa mã PIN</h2>
-              <p className="mt-1 text-xs text-slate-300">
-                Bảo vệ quyền riêng tư nhật ký bằng thuật toán mã hóa SHA-256.
+              <h2 className="text-sm font-bold">Chỉ mình bạn đọc được</h2>
+              <p className="mt-1 text-xs leading-relaxed text-slate-300">
+                Nhật ký là chuyện riêng tư. Khóa bằng mã PIN, không ai khác mở được, kể cả khi người khác cầm máy bạn.
               </p>
             </div>
           </div>
