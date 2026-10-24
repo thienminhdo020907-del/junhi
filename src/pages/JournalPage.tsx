@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BookOpen, Calendar, Filter, RotateCcw, Search, Tag as TagIcon } from 'lucide-react'
+import { BookOpen, Filter, RotateCcw, Search } from 'lucide-react'
 import EmptyState from '@/components/EmptyState'
 import PageHeader from '@/components/PageHeader'
 import { ROUTES } from '@/constants/app'
@@ -8,7 +8,16 @@ import { EMOTION_TAGS } from '@/constants/entry'
 import type { Entry } from '@/db/db'
 import { useAllEntries } from '@/db/useEntries'
 import { fromKey } from '@/lib/date'
-import { MOOD_EMOJI, MOOD_LABEL, MOODS, moodColor, type Mood } from '@/lib/mood'
+import { MOOD_LABEL, MOODS, moodColor, type Mood } from '@/lib/mood'
+import { playPopSound } from '@/lib/sound'
+import {
+  DoodleMood1,
+  DoodleMood2,
+  DoodleMood3,
+  DoodleMood4,
+  DoodleMood5,
+  DoodleFlower,
+} from '@/components/DoodleIcons'
 
 const dayFmt = new Intl.DateTimeFormat('vi-VN', {
   weekday: 'long',
@@ -17,39 +26,61 @@ const dayFmt = new Intl.DateTimeFormat('vi-VN', {
   year: 'numeric',
 })
 
+function renderMoodDoodle(m: Mood) {
+  switch (m) {
+    case 1:
+      return <DoodleMood1 size={36} />
+    case 2:
+      return <DoodleMood2 size={36} />
+    case 3:
+      return <DoodleMood3 size={36} />
+    case 4:
+      return <DoodleMood4 size={36} />
+    case 5:
+      return <DoodleMood5 size={36} />
+  }
+}
+
 function EntryCard({ entry }: { entry: Entry }) {
   return (
     <Link
       to={`${ROUTES.calendar}?ngay=${entry.date}`}
       id={`journal-${entry.date}`}
-      className="card flex gap-4 !p-4.5 transition-all hover:-translate-y-0.5 hover:shadow-md"
+      onClick={playPopSound}
+      className="group relative flex gap-4 rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-5 shadow-[2px_3px_0px_rgba(43,39,36,0.06)] transition-all hover:-translate-y-1 hover:shadow-[3px_4px_0px_#2B2724] dark:border-white/20 dark:bg-[#282421]"
     >
+      {/* Khuôn mặt vẽ tay tương ứng với mood */}
       <div
-        className="flex size-12 shrink-0 items-center justify-center rounded-2xl text-2xl shadow-xs"
+        className="flex size-14 shrink-0 items-center justify-center rounded-2xl border-[1.5px] border-[#2B2724]/20 p-1 shadow-sm transition-transform group-hover:scale-105"
         style={{ background: moodColor(entry.mood) }}
         title={MOOD_LABEL[entry.mood]}
       >
-        {MOOD_EMOJI[entry.mood]}
+        {renderMoodDoodle(entry.mood)}
       </div>
+
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold capitalize">{dayFmt.format(fromKey(entry.date))}</p>
-          <span className="text-xs text-slate-400">{MOOD_LABEL[entry.mood]}</span>
+          <p className="font-serif text-base font-semibold italic text-[#2B2724] dark:text-[#EDE8E3] capitalize">
+            {dayFmt.format(fromKey(entry.date))}
+          </p>
+          <span className="font-sans text-xs text-[#7A736B] dark:text-[#A8A199]">{MOOD_LABEL[entry.mood]}</span>
         </div>
+
         {entry.tags.length > 0 && (
-          <div className="mt-1 flex flex-wrap gap-1">
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
             {entry.tags.map((t) => (
               <span
                 key={t}
-                className="rounded-full bg-brand-100/70 px-2 py-0.5 text-[11px] text-brand-700 dark:bg-white/10 dark:text-brand-100"
+                className="rounded-full border border-[#2B2724]/20 bg-[#FBFAF7] px-2.5 py-0.5 text-[11px] font-sans text-[#7A736B] dark:border-white/20 dark:bg-white/5 dark:text-[#A8A199]"
               >
                 {t}
               </span>
             ))}
           </div>
         )}
-        <p className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">
-          {entry.content || <span className="italic text-slate-400">Không có ghi chú.</span>}
+
+        <p className="mt-2.5 line-clamp-2 font-sans text-sm text-[#2B2724]/80 dark:text-[#EDE8E3]/80 leading-relaxed">
+          {entry.content || <span className="font-serif italic text-[#7A736B]/60">Không có ghi chú thêm ✿</span>}
         </p>
       </div>
     </Link>
@@ -85,6 +116,7 @@ export default function JournalPage() {
   const hasFilter = Boolean(query || moodFilter || selectedTag || startDate || endDate)
 
   const resetFilters = () => {
+    playPopSound()
     setQuery('')
     setMoodFilter(null)
     setSelectedTag(null)
@@ -92,43 +124,41 @@ export default function JournalPage() {
     setEndDate('')
   }
 
-  // Gom theo tháng, mới nhất trước
   const groups = new Map<string, Entry[]>()
   filtered.forEach((e) => {
     const k = e.date.slice(0, 7)
     groups.set(k, [...(groups.get(k) ?? []), e])
   })
 
-  // Tìm tất cả các tag đã từng được dùng
   const availableTags = Array.from(
     new Set([...EMOTION_TAGS, ...entries.flatMap((e) => e.tags)]),
   ).filter((t) => entries.some((e) => e.tags.includes(t)))
 
   return (
-    <>
+    <div className="space-y-6 select-none">
       <PageHeader
-        title="Nhật ký"
-        subtitle={`${entries.length} ngày đã ghi chép${hasFilter ? ` · hiển thị ${filtered.length} kết quả` : ''}`}
+        title="Trang sổ kỷ niệm"
+        subtitle={`${entries.length} ngày đã viết lại ✿${hasFilter ? ` · đang xem ${filtered.length} trang` : ''}`}
       />
 
       {/* Thanh tìm kiếm & bộ lọc */}
-      <div className="card mb-6 space-y-4">
+      <div className="relative rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-5 shadow-[2px_3px_0px_rgba(43,39,36,0.06)] dark:border-white/20 dark:bg-[#282421] space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <label className="relative flex-1">
-            <span className="sr-only">Tìm kiếm nhật ký</span>
-            <Search size={16} className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400" />
+            <span className="sr-only">Tìm kiếm trang nhật ký</span>
+            <Search size={15} className="absolute top-1/2 left-3.5 -translate-y-1/2 text-[#7A736B]" />
             <input
               id="journal-search"
               type="search"
-              placeholder="Tìm theo nội dung, tag, hoặc ngày (YYYY-MM-DD)…"
+              placeholder="Tìm theo cảm xúc, từ khóa, hoặc ngày (YYYY-MM-DD)…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full rounded-xl border border-brand-100 bg-white/70 py-2.5 pr-3 pl-9 text-sm outline-none transition-colors focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-white/20 dark:bg-white/5"
+              className="w-full rounded-full border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] py-2 pr-4 pl-10 text-sm font-sans text-[#2B2724] outline-none transition-all placeholder:text-[#7A736B]/60 focus:border-[#2B2724] focus:shadow-[1.5px_2px_0px_#2B2724] dark:border-white/20 dark:bg-transparent dark:text-[#EDE8E3]"
             />
           </label>
 
           <div className="flex items-center gap-2">
-            {/* Lọc theo Mood */}
+            {/* 5 Nút lọc theo Mood */}
             <div className="flex gap-1.5" role="group" aria-label="Lọc theo tâm trạng">
               {MOODS.map((m) => (
                 <button
@@ -137,138 +167,122 @@ export default function JournalPage() {
                   aria-pressed={moodFilter === m}
                   aria-label={MOOD_LABEL[m]}
                   title={MOOD_LABEL[m]}
-                  onClick={() => setMoodFilter(moodFilter === m ? null : m)}
-                  className={`flex size-9 items-center justify-center rounded-xl text-lg transition-all ${
-                    moodFilter === m ? 'scale-105 ring-2 ring-brand-500 shadow-xs' : 'opacity-50 hover:opacity-80'
+                  onClick={() => {
+                    playPopSound()
+                    setMoodFilter(moodFilter === m ? null : m)
+                  }}
+                  className={`flex size-8 items-center justify-center rounded-full border-[1.5px] transition-all hover:-translate-y-0.5 ${
+                    moodFilter === m
+                      ? 'border-[#2B2724] shadow-[1.5px_2px_0px_#2B2724] scale-105'
+                      : 'border-[#2B2724]/20 opacity-60 hover:opacity-100'
                   }`}
-                  style={{ background: moodFilter === m ? moodColor(m) : 'var(--empty-cell)' }}
+                  style={{ background: moodColor(m) }}
                 >
-                  {MOOD_EMOJI[m]}
+                  <span className="text-xs">✿</span>
                 </button>
               ))}
             </div>
 
             <button
               type="button"
-              onClick={() => setShowAdvanced((v) => !v)}
-              className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
-                showAdvanced || selectedTag || startDate || endDate
-                  ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-white/10 dark:text-brand-100'
-                  : 'border-brand-100 text-slate-600 hover:bg-black/5 dark:border-white/10 dark:text-slate-300'
+              onClick={() => {
+                playPopSound()
+                setShowAdvanced(!showAdvanced)
+              }}
+              title="Bộ lọc ngày"
+              className={`flex size-8 items-center justify-center rounded-full border-[1.5px] transition-all ${
+                showAdvanced || startDate || endDate
+                  ? 'border-[#2B2724] bg-[#F6E3A8] text-[#2B2724] shadow-[1.5px_2px_0px_#2B2724]'
+                  : 'border-[#2B2724]/20 text-[#7A736B] hover:border-[#2B2724]'
               }`}
             >
               <Filter size={14} />
-              Lọc thêm
             </button>
 
             {hasFilter && (
               <button
                 type="button"
                 onClick={resetFilters}
-                title="Đặt lại bộ lọc"
-                className="flex size-9 items-center justify-center rounded-xl text-slate-400 hover:bg-black/5 hover:text-slate-600 dark:hover:bg-white/10"
+                title="Xóa bộ lọc"
+                className="flex size-8 items-center justify-center rounded-full border-[1.5px] border-[#2B2724]/20 text-[#7A736B] hover:border-[#2B2724] hover:text-[#2B2724]"
               >
-                <RotateCcw size={15} />
+                <RotateCcw size={14} />
               </button>
             )}
           </div>
         </div>
 
-        {/* Bảng bộ lọc mở rộng: Lọc theo Tag và Khoảng ngày */}
-        {showAdvanced && (
-          <div className="grid gap-4 border-t border-brand-100/70 pt-3 dark:border-white/10 sm:grid-cols-2">
-            {/* Khoảng ngày */}
-            <div>
-              <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
-                <Calendar size={13} className="text-brand-500" />
-                Khoảng ngày
-              </p>
-              <div className="flex items-center gap-2">
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full rounded-xl border border-brand-100 bg-transparent px-2.5 py-1.5 text-xs dark:border-white/20"
-                />
-                <span className="text-xs text-slate-400">đến</span>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full rounded-xl border border-brand-100 bg-transparent px-2.5 py-1.5 text-xs dark:border-white/20"
-                />
-              </div>
-            </div>
-
-            {/* Tag cảm xúc */}
-            <div>
-              <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
-                <TagIcon size={13} className="text-brand-500" />
-                Tag cảm xúc
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {availableTags.length === 0 ? (
-                  <span className="text-xs text-slate-400">Chưa có tag nào trong dữ liệu.</span>
-                ) : (
-                  availableTags.map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => setSelectedTag((cur) => (cur === t ? null : t))}
-                      className={`rounded-full px-2.5 py-1 text-xs transition-colors ${
-                        selectedTag === t
-                          ? 'bg-brand-500 text-white shadow-xs'
-                          : 'bg-brand-100/60 text-slate-600 hover:bg-brand-100 dark:bg-white/10 dark:text-slate-300'
-                      }`}
-                    >
-                      {t}
-                    </button>
-                  ))
-                )}
-              </div>
-            </div>
+        {/* Thẻ cảm xúc để lọc nhanh */}
+        {availableTags.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-[#2B2724]/10 dark:border-white/10">
+            <span className="font-mono text-[10px] tracking-widest text-[#7A736B] uppercase mr-1">
+              TAGS:
+            </span>
+            {availableTags.map((t) => {
+              const on = selectedTag === t
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => {
+                    playPopSound()
+                    setSelectedTag(on ? null : t)
+                  }}
+                  className={`rounded-full border-[1.5px] px-3 py-0.5 text-xs font-sans transition-all hover:-translate-y-0.5 ${
+                    on
+                      ? 'border-[#2B2724] bg-[#CFE3DD] text-[#2B2724] font-medium shadow-[1.5px_2px_0px_#2B2724]'
+                      : 'border-[#2B2724]/20 bg-[#FBFAF7] text-[#7A736B] hover:border-[#2B2724] dark:border-white/20 dark:bg-transparent dark:text-[#A8A199]'
+                  }`}
+                >
+                  {t}
+                </button>
+              )
+            })}
           </div>
         )}
       </div>
 
-      {entries.length === 0 ? (
+      {/* Danh sách các trang nhật ký */}
+      {filtered.length === 0 ? (
         <EmptyState
           icon={BookOpen}
-          title="Chưa có trang nhật ký nào"
-          description="Mỗi ngày là một câu chuyện đáng để ghi lại. Hãy bắt đầu ghi chép cảm xúc và năng lượng của bạn ngay hôm nay nhé!"
-          actionLabel="Bắt đầu trang nhật ký đầu tiên"
+          title={hasFilter ? 'Không tìm thấy trang phù hợp' : 'Chưa có trang nhật ký nào'}
+          description={
+            hasFilter
+              ? 'Thử xóa bớt bộ lọc hoặc tìm từ khóa khác xem sao nha ✿'
+              : 'Hãy bắt đầu viết lại ngày hôm nay của bạn từ trang chủ nhé.'
+          }
+          actionLabel={hasFilter ? 'Viết trang hôm nay ✿' : 'Viết trang đầu tiên ✿'}
           actionTo={ROUTES.today}
-          secondaryLabel="Cài đặt & Nhập sao lưu"
-          secondaryTo={ROUTES.settings}
         />
-      ) : filtered.length === 0 ? (
-        <div className="card py-10 text-center text-sm text-slate-500 dark:text-slate-400">
-          <p className="text-3xl">🔍</p>
-          <p className="mt-2 font-medium">Không tìm thấy bài nào phù hợp với bộ lọc.</p>
-          <button
-            type="button"
-            onClick={resetFilters}
-            className="mt-3 text-xs text-brand-600 underline dark:text-brand-300"
-          >
-            Xóa bộ lọc để xem tất cả
-          </button>
-        </div>
       ) : (
         <div className="space-y-8">
-          {[...groups].map(([key, list]) => (
-            <section key={key} aria-label={`Tháng ${key}`}>
-              <h2 className="mb-3 text-sm font-semibold text-slate-500 dark:text-slate-400">
-                Tháng {Number(key.slice(5))}/{key.slice(0, 4)} ({list.length} bài)
-              </h2>
-              <div className="grid gap-3 lg:grid-cols-2">
-                {list.map((e) => (
-                  <EntryCard key={e.id} entry={e} />
-                ))}
-              </div>
-            </section>
-          ))}
+          {Array.from(groups.entries()).map(([monthKey, monthEntries]) => {
+            const [y, m] = monthKey.split('-').map(Number)
+            const label = new Intl.DateTimeFormat('vi-VN', { month: 'long', year: 'numeric' }).format(
+              new Date(y, m - 1, 1),
+            )
+            return (
+              <section key={monthKey} className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <DoodleFlower size={14} className="text-[#F4C6D0]" />
+                  <h3 className="font-serif text-lg italic text-[#2B2724] dark:text-[#EDE8E3] capitalize">
+                    {label}
+                  </h3>
+                  <span className="font-mono text-[10px] text-[#7A736B] dark:text-[#A8A199]">
+                    ({monthEntries.length} trang)
+                  </span>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {monthEntries.map((e) => (
+                    <EntryCard key={e.date} entry={e} />
+                  ))}
+                </div>
+              </section>
+            )
+          })}
         </div>
       )}
-    </>
+    </div>
   )
 }

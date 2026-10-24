@@ -1,168 +1,181 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --color-brand-50: #f3f1ff;
-  --color-brand-100: #e8e4ff;
-  --color-brand-500: #7c6cf0;
-  --color-brand-600: #6552e0;
-  --color-brand-700: #5242c0;
+  --font-sans: 'DM Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Playfair Display', 'Instrument Serif', Georgia, serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+
+  --color-cozy-cream: #F3F1EC;
+  --color-cozy-card: #FBFAF7;
+  --color-cozy-brown: #2B2724;
+  --color-cozy-gray: #7A736B;
+
+  --color-pastel-pink: #F4C6D0;
+  --color-pastel-mint: #CFE3DD;
+  --color-pastel-butter: #F6E3A8;
+  --color-pastel-sky: #CFE0F1;
+  --color-pastel-lavender: #D9CFEA;
+
+  --color-mood-1: #E08A82;
+  --color-mood-2: #F2B58B;
+  --color-mood-3: #F6E3A8;
+  --color-mood-4: #BFDDCB;
+  --color-mood-5: #8CC3A0;
 }
 
-/* Bảng màu mood: 1 đỏ, 2 cam, 3 vàng, 4 xanh lá nhạt, 5 xanh lá đậm */
 :root {
-  --mood-1: #ef4444;
-  --mood-2: #f97316;
-  --mood-3: #facc15;
-  --mood-4: #86efac;
-  --mood-5: #16a34a;
-  --empty-cell: #e9e7f5;
+  --bg-page: #F3F1EC;
+  --bg-card: #FBFAF7;
+  --text-main: #2B2724;
+  --text-muted: #7A736B;
+  --border-main: #2B2724;
+  --border-subtle: rgba(43, 39, 36, 0.15);
+
+  --pastel-pink: #F4C6D0;
+  --pastel-mint: #CFE3DD;
+  --pastel-butter: #F6E3A8;
+  --pastel-sky: #CFE0F1;
+  --pastel-lavender: #D9CFEA;
+
+  --mood-1: #E08A82;
+  --mood-2: #F2B58B;
+  --mood-3: #F6E3A8;
+  --mood-4: #BFDDCB;
+  --mood-5: #8CC3A0;
+  --empty-cell: #E7E3DC;
+
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --mood-1: #dc4a4a;
-    --mood-2: #e0782a;
-    --mood-3: #d4b01c;
-    --mood-4: #5fbf82;
-    --mood-5: #1f9d4d;
-    --empty-cell: #2a2840;
-    color-scheme: dark;
-  }
+.dark, [data-theme="dark"] {
+  --bg-page: #1F1C1A;
+  --bg-card: #282421;
+  --text-main: #EDE8E3;
+  --text-muted: #A8A199;
+  --border-main: #4E4640;
+  --border-subtle: rgba(237, 232, 227, 0.15);
+
+  --pastel-pink: #C996A1;
+  --pastel-mint: #9EBCB3;
+  --pastel-butter: #C4B37C;
+  --pastel-sky: #9CB2C7;
+  --pastel-lavender: #A79DB8;
+
+  --mood-1: #B56860;
+  --mood-2: #C48E66;
+  --mood-3: #C4B37C;
+  --mood-4: #8CAFA0;
+  --mood-5: #659C79;
+  --empty-cell: #332E2A;
+
+  color-scheme: dark;
 }
 
-html,
-body,
-#root {
-  height: 100%;
+html, body, #root {
+  min-height: 100%;
 }
 
 body {
   margin: 0;
-  background: #faf9ff;
-  color: #1f1b3a;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background: #12111c;
-    color: #ece9fb;
-  }
+/* Custom Con trỏ chuột hình hoa nhỏ ✿ trên các phần tử tương tác */
+.cursor-flower,
+button,
+a,
+input[type="range"],
+input[type="checkbox"],
+[role="button"] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='5' r='3' fill='%23F4C6D0' stroke='%232B2724' stroke-width='1'/%3E%3Ccircle cx='15' cy='8' r='3' fill='%23F4C6D0' stroke='%232B2724' stroke-width='1'/%3E%3Ccircle cx='13' cy='14' r='3' fill='%23F4C6D0' stroke='%232B2724' stroke-width='1'/%3E%3Ccircle cx='7' cy='14' r='3' fill='%23F4C6D0' stroke='%232B2724' stroke-width='1'/%3E%3Ccircle cx='5' cy='8' r='3' fill='%23F4C6D0' stroke='%232B2724' stroke-width='1'/%3E%3Ccircle cx='10' cy='10' r='2.5' fill='%23F6E3A8' stroke='%232B2724' stroke-width='1'/%3E%3C/svg%3E") 10 10, pointer !important;
 }
 
+/* Thẻ (Card) Whimsical Cozy */
 @utility card {
-  @apply rounded-3xl bg-white p-5 shadow-sm ring-1 ring-brand-100 dark:bg-[#1c1a2b] dark:ring-white/10;
+  border-radius: 24px;
+  border: 1.5px solid var(--border-subtle);
+  background-color: var(--bg-card);
+  padding: 1.25rem;
+  box-shadow: 0 4px 20px -2px rgba(43, 39, 36, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-/* ==========================================================================
-   Animation Mức năng lượng: 1-2 Đóng băng, 3 Safe & Heal xanh lá, 4-5 Cháy lửa
-   ========================================================================== */
+.cozy-card {
+  background-color: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 24px;
+  box-shadow: 0 4px 20px -2px rgba(43, 39, 36, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
 
-/* 1 & 2: Hiệu ứng Đóng băng bao quanh khung */
-@keyframes energy-freeze-pulse {
-  0%, 100% {
-    box-shadow: 0 0 16px -1px rgba(56, 189, 248, 0.65), 0 0 28px 2px rgba(186, 230, 253, 0.45), inset 0 0 16px -2px rgba(186, 230, 253, 0.55);
-    border-color: rgba(56, 189, 248, 0.85);
+.cozy-card:hover, .card:hover {
+  border-color: var(--border-main);
+}
+
+/* Nút hình viên thuốc (Pill Button) */
+.cozy-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1.5px solid var(--border-main);
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  padding: 0.5rem 1.25rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.cozy-pill-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 2px 3px 0px var(--border-main);
+}
+
+.cozy-pill-btn:active {
+  transform: translateY(0px);
+  box-shadow: 0px 0px 0px var(--border-main);
+}
+
+/* Nền giấy có dòng kẻ mờ (Lined Paper Background) cho trang viết nhật ký */
+.paper-lined {
+  background-color: var(--bg-card);
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 31px,
+    rgba(43, 39, 36, 0.07) 31px,
+    rgba(43, 39, 36, 0.07) 32px
+  );
+  line-height: 32px;
+}
+
+.dark .paper-lined,
+[data-theme="dark"] .paper-lined {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 31px,
+    rgba(237, 232, 227, 0.08) 31px,
+    rgba(237, 232, 227, 0.08) 32px
+  );
+}
+
+/* Hiệu ứng focus ring rõ nét dễ tiếp cận */
+:focus-visible {
+  outline: 2px solid var(--pastel-pink);
+  outline-offset: 3px;
+}
+
+/* Tôn trọng người dùng tắt hiệu ứng chuyển động */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-  50% {
-    box-shadow: 0 0 26px 3px rgba(14, 165, 233, 0.85), 0 0 42px 6px rgba(125, 211, 252, 0.6), inset 0 0 24px 1px rgba(224, 242, 254, 0.8);
-    border-color: rgba(186, 230, 253, 1);
-  }
 }
-
-.energy-freeze {
-  position: relative;
-  border-width: 2px !important;
-  border-color: #38bdf8 !important;
-  animation: energy-freeze-pulse 2.2s infinite ease-in-out;
-  background: radial-gradient(circle at 50% 0%, rgba(224, 242, 254, 0.25), transparent 70%);
-}
-
-/* 3: Hiệu ứng Safe & Heal xanh lá bao quanh khung */
-@keyframes energy-heal-pulse {
-  0%, 100% {
-    box-shadow: 0 0 16px -1px rgba(34, 197, 94, 0.55), 0 0 28px 2px rgba(187, 247, 208, 0.35), inset 0 0 14px -2px rgba(187, 247, 208, 0.45);
-    border-color: rgba(34, 197, 94, 0.8);
-  }
-  50% {
-    box-shadow: 0 0 26px 3px rgba(22, 163, 74, 0.8), 0 0 40px 5px rgba(74, 222, 128, 0.55), inset 0 0 22px 1px rgba(220, 252, 231, 0.7);
-    border-color: rgba(74, 222, 128, 1);
-  }
-}
-
-.energy-heal {
-  position: relative;
-  border-width: 2px !important;
-  border-color: #22c55e !important;
-  animation: energy-heal-pulse 2.5s infinite ease-in-out;
-  background: radial-gradient(circle at 50% 0%, rgba(220, 252, 231, 0.28), transparent 70%);
-}
-
-/* 4 & 5: Hiệu ứng Cháy lửa bao quanh khung */
-@keyframes energy-fire-flicker {
-  0%, 100% {
-    box-shadow: 0 0 20px -1px rgba(249, 115, 22, 0.85), 0 0 35px 5px rgba(239, 68, 68, 0.5), inset 0 0 18px -2px rgba(251, 146, 60, 0.6);
-    border-color: rgba(249, 115, 22, 0.95);
-  }
-  25% {
-    box-shadow: 0 0 30px 4px rgba(239, 68, 68, 0.95), 0 0 48px 9px rgba(245, 158, 11, 0.65), inset 0 0 24px 2px rgba(254, 215, 170, 0.75);
-    border-color: rgba(239, 68, 68, 1);
-  }
-  75% {
-    box-shadow: 0 0 24px 2px rgba(245, 158, 11, 0.9), 0 0 40px 7px rgba(220, 38, 38, 0.55), inset 0 0 20px 1px rgba(253, 186, 116, 0.7);
-    border-color: rgba(245, 158, 11, 1);
-  }
-}
-
-.energy-fire {
-  position: relative;
-  border-width: 2px !important;
-  border-color: #f97316 !important;
-  animation: energy-fire-flicker 1.5s infinite ease-in-out;
-  background: radial-gradient(circle at 50% 0%, rgba(254, 215, 170, 0.3), transparent 70%);
-}
-
-/* ==========================================================================
-   CHỦ ĐỀ RETRO WINDOWS 95 / Y2K MS PAINT THEME
-   ========================================================================== */
-
-.theme-win95 {
-  --empty-cell: #d4d0c8;
-}
-
-.theme-win95 body {
-  background-color: #e8f3fe !important;
-  color: #000000 !important;
-}
-
-.theme-win95 .card {
-  background-color: #c0c0c0 !important;
-  color: #000000 !important;
-  border-top: 2px solid #ffffff !important;
-  border-left: 2px solid #ffffff !important;
-  border-right: 2px solid #000000 !important;
-  border-bottom: 2px solid #000000 !important;
-  box-shadow: inset 1px 1px 0px #dfdfdf, inset -1px -1px 0px #808080 !important;
-  border-radius: 0px !important;
-}
-
-.theme-win95 button {
-  border-radius: 0px !important;
-}
-
-.theme-win95 textarea,
-.theme-win95 input[type="text"],
-.theme-win95 input[type="password"],
-.theme-win95 input[type="email"] {
-  border-top: 2px solid #808080 !important;
-  border-left: 2px solid #808080 !important;
-  border-right: 2px solid #ffffff !important;
-  border-bottom: 2px solid #ffffff !important;
-  background: #ffffff !important;
-  color: #000000 !important;
-  border-radius: 0px !important;
-  box-shadow: inset 1px 1px 0px #000000 !important;
-}
-

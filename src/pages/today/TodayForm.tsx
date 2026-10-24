@@ -1,14 +1,26 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
+import confetti from 'canvas-confetti'
 import { Check, Clock, CloudCheck, Sparkles } from 'lucide-react'
 import SleepClock from '@/components/SleepClock'
 import type { Energy, Entry } from '@/db/db'
 import { saveEntry } from '@/db/saveEntry'
 import { getStoredToken, syncUpload } from '@/lib/api'
 import { EMOTION_TAGS, ENERGY_LABEL } from '@/constants/entry'
-import { MOOD_EMOJI, MOOD_LABEL, MOODS, moodColor, type Mood } from '@/lib/mood'
+import { MOOD_LABEL, MOODS, moodColor, type Mood } from '@/lib/mood'
+import { COZY_SPRING } from '@/constants/tokens'
+import { playPopSound, playChimeSound } from '@/lib/sound'
+import {
+  DoodleMood1,
+  DoodleMood2,
+  DoodleMood3,
+  DoodleMood4,
+  DoodleMood5,
+  DoodleWashiTape,
+  DoodleFlower,
+} from '@/components/DoodleIcons'
 
 const ENERGIES: Energy[] = [1, 2, 3, 4, 5]
-const labelCls = 'mb-2.5 block text-sm font-semibold'
 
 export default function TodayForm({ date, entry }: { date: string; entry?: Entry }) {
   const [mood, setMood] = useState<Mood | null>(entry?.mood ?? null)
@@ -18,6 +30,7 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
   const [content, setContent] = useState(entry?.content ?? '')
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [lastSavedTime, setLastSavedTime] = useState<string | null>(null)
+  const [justSavedAnimation, setJustSavedAnimation] = useState(false)
 
   const isInitialMount = useRef(true)
   const debounceTimer = useRef<number | null>(null)
@@ -27,8 +40,30 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
   }
 
   const toggleTag = (t: string) => {
+    playPopSound()
     markDirty()
     setTags((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]))
+  }
+
+  const handleMoodSelect = (m: Mood) => {
+    playPopSound()
+    markDirty()
+    setMood(m)
+
+    // Hiệu ứng rắc confetti pastel khi chọn mood
+    try {
+      confetti({
+        particleCount: 22,
+        spread: 50,
+        origin: { y: 0.4 },
+        colors: ['#F4C6D0', '#CFE3DD', '#F6E3A8', '#CFE0F1', '#D9CFEA'],
+        ticks: 120,
+        gravity: 0.9,
+        scalar: 0.8,
+      })
+    } catch {
+      // Ignored
+    }
   }
 
   const performSave = useCallback(
@@ -51,6 +86,10 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
         content: currentContent.trim(),
       })
       setStatus('saved')
+      playChimeSound()
+      setJustSavedAnimation(true)
+      setTimeout(() => setJustSavedAnimation(false), 2000)
+
       setLastSavedTime(
         new Intl.DateTimeFormat('vi-VN', {
           hour: '2-digit',
@@ -59,7 +98,6 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
         }).format(new Date()),
       )
 
-      // Nếu đã đăng nhập, tự động đồng bộ ngầm lên MySQL
       if (getStoredToken()) {
         syncUpload([
           {
@@ -76,7 +114,6 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
     [date],
   )
 
-  // Tự động lưu sau khi ngừng nhập 1 giây (nếu đã chọn mood)
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false
@@ -91,7 +128,7 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
 
     debounceTimer.current = window.setTimeout(() => {
       void performSave(mood, tags, energy, sleep, content)
-    }, 1000)
+    }, 1200)
 
     return () => {
       if (debounceTimer.current) {
@@ -111,53 +148,99 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
   const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0
   const charCount = content.length
 
+  const renderDoodleMood = (m: Mood) => {
+    switch (m) {
+      case 1:
+        return <DoodleMood1 size={46} />
+      case 2:
+        return <DoodleMood2 size={46} />
+      case 3:
+        return <DoodleMood3 size={46} />
+      case 4:
+        return <DoodleMood4 size={46} />
+      case 5:
+        return <DoodleMood5 size={46} />
+    }
+  }
+
   return (
-    <form onSubmit={onSubmit} className="grid gap-6 lg:grid-cols-2 lg:items-start">
-      {/* Cột trái: Mood + Cảm xúc + Sức khỏe */}
+    <form onSubmit={onSubmit} className="grid gap-6 lg:grid-cols-2 lg:items-start select-none">
+      {/* Cột trái: Mood 5 khuôn mặt vẽ tay + Cảm xúc + Sức khỏe */}
       <div className="space-y-6">
-        <section className="card">
-          <p className={labelCls}>Hôm nay bạn cảm thấy thế nào?</p>
-          <div className="grid grid-cols-5 gap-2.5" role="radiogroup" aria-label="Tâm trạng">
+        {/* Khung chọn 5 khuôn mặt vẽ tay */}
+        <section className="relative rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-6 shadow-[2px_3px_0px_rgba(43,39,36,0.06)] dark:border-white/20 dark:bg-[#282421]">
+          {/* Miếng washi tape hồng trang trí */}
+          <div className="absolute -top-2 left-8">
+            <DoodleWashiTape color="#F4C6D0" />
+          </div>
+
+          <div className="mb-4 flex items-center justify-between">
+            <p className="font-serif text-lg italic text-[#2B2724] dark:text-[#EDE8E3]">
+              Hôm nay tâm trạng bạn thế nào? ✿
+            </p>
+            <span className="font-mono text-[10px] tracking-widest text-[#7A736B] dark:text-[#A8A199] uppercase">
+              1 — 5 MOOD
+            </span>
+          </div>
+
+          {/* 5 Khuôn mặt cảm xúc vẽ tay với hiệu ứng nảy (spring) */}
+          <div className="grid grid-cols-5 gap-2 sm:gap-3" role="radiogroup" aria-label="Tâm trạng">
             {MOODS.map((m) => {
               const selected = mood === m
               return (
-                <button
+                <motion.button
                   key={m}
                   type="button"
                   id={`mood-${m}`}
                   role="radio"
                   aria-checked={selected}
                   aria-label={MOOD_LABEL[m]}
-                  onClick={() => {
-                    markDirty()
-                    setMood(m)
-                  }}
-                  className={`flex aspect-square items-center justify-center rounded-2xl text-3xl transition-all active:scale-90 ${
+                  onClick={() => handleMoodSelect(m)}
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.92 }}
+                  animate={selected ? { scale: [1, 1.25, 1], y: -2 } : { scale: 1, y: 0 }}
+                  transition={COZY_SPRING}
+                  className={`group relative flex aspect-square flex-col items-center justify-center rounded-2xl border-[1.5px] transition-all p-1 ${
                     selected
-                      ? 'scale-110 shadow-md ring-2 ring-brand-500'
-                      : 'opacity-60 grayscale-[40%] hover:opacity-90'
+                      ? 'border-[#2B2724] shadow-[2px_3px_0px_#2B2724] dark:border-white'
+                      : 'border-[#2B2724]/20 opacity-70 hover:opacity-100 hover:border-[#2B2724] dark:border-white/20'
                   }`}
-                  style={{ background: selected ? moodColor(m) : 'var(--empty-cell)' }}
+                  style={{ backgroundColor: selected ? moodColor(m) : '#FBFAF7' }}
                 >
-                  {MOOD_EMOJI[m]}
-                </button>
+                  <div className="transition-transform group-hover:scale-105">
+                    {renderDoodleMood(m)}
+                  </div>
+                </motion.button>
               )
             })}
           </div>
-          <p className="mt-3.5 h-5 text-center text-sm font-medium text-slate-600 dark:text-slate-300">
+
+          {/* Nhãn tâm trạng cảm xúc */}
+          <p className="mt-4 h-6 text-center font-serif text-base italic text-[#2B2724] dark:text-[#EDE8E3]">
             {mood ? (
               <span className="inline-flex items-center gap-1.5">
-                <Sparkles size={14} className="text-brand-500" />
+                <Sparkles size={14} className="text-[#F2B58B]" />
                 {MOOD_LABEL[mood]}
               </span>
             ) : (
-              'Chọn một biểu tượng để bắt đầu ghi'
+              <span className="text-[#7A736B] dark:text-[#A8A199] font-sans text-xs">
+                chạm vào một khuôn mặt vẽ tay để bắt đầu ghi nha
+              </span>
             )}
           </p>
         </section>
 
-        <section className="card">
-          <p className={labelCls}>Cảm xúc nổi bật</p>
+        {/* Khung thẻ cảm xúc nổi bật (Pill Tags) */}
+        <section className="relative rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-6 shadow-[2px_3px_0px_rgba(43,39,36,0.06)] dark:border-white/20 dark:bg-[#282421]">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="font-serif text-lg italic text-[#2B2724] dark:text-[#EDE8E3]">
+              Cảm xúc nổi bật 🍃
+            </p>
+            <span className="font-mono text-[10px] tracking-widest text-[#7A736B] dark:text-[#A8A199] uppercase">
+              TAGS
+            </span>
+          </div>
+
           <div className="flex flex-wrap gap-2">
             {EMOTION_TAGS.map((t) => {
               const on = tags.includes(t)
@@ -167,10 +250,10 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
                   type="button"
                   aria-pressed={on}
                   onClick={() => toggleTag(t)}
-                  className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-all ${
+                  className={`rounded-full border-[1.5px] px-3.5 py-1.5 text-xs sm:text-sm font-sans transition-all hover:-translate-y-0.5 ${
                     on
-                      ? 'bg-brand-500 text-white shadow-sm ring-1 ring-brand-600'
-                      : 'bg-brand-100/70 text-slate-600 hover:bg-brand-100 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/15'
+                      ? 'border-[#2B2724] bg-[#CFE3DD] text-[#2B2724] font-medium shadow-[1.5px_2px_0px_#2B2724] dark:border-white/50'
+                      : 'border-[#2B2724]/20 bg-[#FBFAF7] text-[#7A736B] hover:border-[#2B2724] dark:border-white/20 dark:bg-[#282421] dark:text-[#A8A199]'
                   }`}
                 >
                   {t}
@@ -180,56 +263,15 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
           </div>
         </section>
 
-        {/* Khung Mức năng lượng với hiệu ứng animation: 1-2 đóng băng, 3 safe & heal, 4-5 cháy lửa */}
-        <section
-          className={`card transition-all duration-500 ${
-            energy === 1 || energy === 2
-              ? 'energy-freeze'
-              : energy === 3
-                ? 'energy-heal'
-                : energy === 4 || energy === 5
-                  ? 'energy-fire'
-                  : ''
-          }`}
-        >
-          <div className="mb-2.5 flex items-center justify-between">
-            <p className="flex items-center gap-1.5 text-sm font-semibold">
-              <span>Mức năng lượng</span>
-              {(energy === 1 || energy === 2) && (
-                <span
-                  className="inline-block animate-spin text-base text-sky-400"
-                  style={{ animationDuration: '6s' }}
-                  title="Đóng băng"
-                >
-                  ❄️
-                </span>
-              )}
-              {energy === 3 && (
-                <span className="inline-block animate-pulse text-base text-emerald-500" title="Safe & Heal">
-                  🌿
-                </span>
-              )}
-              {(energy === 4 || energy === 5) && (
-                <span className="inline-block animate-bounce text-base text-orange-500" title="Cháy rực lửa">
-                  🔥
-                </span>
-              )}
+        {/* Mức năng lượng */}
+        <section className="relative rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-6 shadow-[2px_3px_0px_rgba(43,39,36,0.06)] dark:border-white/20 dark:bg-[#282421]">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="font-serif text-lg italic text-[#2B2724] dark:text-[#EDE8E3]">
+              Mức năng lượng cơ thể ⚡
             </p>
             {energy && (
-              <span
-                className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                  energy === 1 || energy === 2
-                    ? 'bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300'
-                    : energy === 3
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
-                      : 'bg-orange-100 text-orange-700 dark:bg-orange-950/60 dark:text-orange-300'
-                }`}
-              >
-                {energy === 1 || energy === 2
-                  ? 'Đóng băng'
-                  : energy === 3
-                    ? 'Safe & Heal'
-                    : 'Bùng cháy'}
+              <span className="font-sans text-xs font-medium text-[#7A736B] dark:text-[#A8A199]">
+                {ENERGY_LABEL[energy]}
               </span>
             )}
           </div>
@@ -237,20 +279,6 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
           <div className="grid grid-cols-5 gap-2" role="radiogroup" aria-label="Năng lượng">
             {ENERGIES.map((n) => {
               const isSelected = energy === n
-              let activeTheme = 'bg-brand-500 text-white'
-              if (isSelected) {
-                if (n === 1 || n === 2) {
-                  activeTheme =
-                    'bg-gradient-to-br from-sky-400 to-cyan-600 text-white shadow-md shadow-sky-500/35 ring-2 ring-sky-300'
-                } else if (n === 3) {
-                  activeTheme =
-                    'bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-md shadow-emerald-500/35 ring-2 ring-emerald-300'
-                } else if (n === 4 || n === 5) {
-                  activeTheme =
-                    'bg-gradient-to-br from-amber-500 via-orange-500 to-red-600 text-white shadow-md shadow-orange-500/45 ring-2 ring-amber-300'
-                }
-              }
-
               return (
                 <button
                   key={n}
@@ -258,13 +286,14 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
                   role="radio"
                   aria-checked={isSelected}
                   onClick={() => {
+                    playPopSound()
                     markDirty()
                     setEnergy(n)
                   }}
-                  className={`rounded-xl py-2.5 text-sm font-semibold transition-all active:scale-95 ${
+                  className={`rounded-2xl border-[1.5px] py-2.5 text-xs sm:text-sm font-mono font-bold transition-all hover:-translate-y-0.5 ${
                     isSelected
-                      ? `${activeTheme} scale-105`
-                      : 'bg-brand-100/70 text-slate-600 hover:bg-brand-100 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/15'
+                      ? 'border-[#2B2724] bg-[#F6E3A8] text-[#2B2724] shadow-[2px_2px_0px_#2B2724]'
+                      : 'border-[#2B2724]/20 bg-[#FBFAF7] text-[#7A736B] hover:border-[#2B2724] dark:border-white/20 dark:bg-[#282421] dark:text-[#A8A199]'
                   }`}
                 >
                   {n}
@@ -272,13 +301,9 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
               )
             })}
           </div>
-
-          <p className="mt-2.5 h-4 text-xs font-medium text-slate-500 dark:text-slate-400">
-            {energy ? `Năng lượng: ${ENERGY_LABEL[energy]}` : 'Chọn mức năng lượng hôm nay'}
-          </p>
         </section>
 
-        {/* Đồng hồ tròn 24 giờ SVG theo dõi giấc ngủ */}
+        {/* Đồng hồ giờ ngủ với trăng và mặt trời */}
         <SleepClock
           value={sleep !== '' ? Number(sleep) : null}
           onChange={(hours) => {
@@ -288,72 +313,94 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
         />
       </div>
 
-      {/* Cột phải: Khung editor viết nhật ký rộng rãi */}
+      {/* Cột phải: Trang sổ nhật ký có dòng kẻ mờ (Lined Paper) */}
       <div className="space-y-4">
-        <section className="card flex min-h-[380px] flex-col">
-          <div className="mb-3 flex items-center justify-between">
-            <label htmlFor="content" className="text-sm font-semibold">
-              Nhật ký hôm nay
-            </label>
-            <div className="text-xs text-slate-400">
-              {wordCount} từ · {charCount} ký tự
+        <motion.section
+          animate={
+            justSavedAnimation
+              ? { scale: [1, 0.98, 1], rotate: [0, -1, 0] }
+              : { scale: 1, rotate: 0 }
+          }
+          transition={COZY_SPRING}
+          className="relative flex min-h-[460px] flex-col rounded-3xl border-[1.5px] border-[#2B2724]/20 bg-[#FBFAF7] p-6 shadow-[3px_4px_0px_rgba(43,39,36,0.06)] dark:border-white/20 dark:bg-[#282421]"
+        >
+          {/* Miếng washi tape vàng ở đầu trang giấy */}
+          <div className="absolute -top-2 right-12">
+            <DoodleWashiTape color="#F6E3A8" />
+          </div>
+
+          <div className="mb-4 flex items-center justify-between border-b border-[#2B2724]/10 pb-3 dark:border-white/10">
+            <div className="flex items-center gap-2">
+              <DoodleFlower size={18} className="text-[#F4C6D0]" />
+              <label htmlFor="content" className="font-serif text-xl italic text-[#2B2724] dark:text-[#EDE8E3]">
+                Trang nhật ký hôm nay
+              </label>
+            </div>
+            <div className="font-mono text-[10px] tracking-wider text-[#7A736B] dark:text-[#A8A199]">
+              {wordCount} TỪ · {charCount} KÝ TỰ
             </div>
           </div>
 
+          {/* Khung nhập chữ với dòng kẻ mờ như trang sổ giấy */}
           <textarea
             id="content"
-            rows={12}
-            placeholder="Kể về ngày hôm nay của bạn... Những việc đã làm, người bạn đã gặp, hoặc suy nghĩ lúc này?"
+            rows={14}
+            placeholder="Kể về ngày hôm nay của bạn... Những niềm vui nho nhỏ, một tách trà ngon, hay một suy nghĩ thoáng qua?"
             value={content}
             onChange={(e) => {
               markDirty()
               setContent(e.target.value)
             }}
-            className="w-full flex-1 resize-y rounded-2xl border border-brand-100/80 bg-white/50 p-4 text-[15px] leading-relaxed outline-none transition-all placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-white/10 dark:bg-white/5"
+            className="paper-lined w-full flex-1 resize-y rounded-2xl border-none p-3 font-sans text-[15px] leading-[32px] text-[#2B2724] outline-none placeholder:text-[#7A736B]/60 dark:text-[#EDE8E3] dark:placeholder:text-[#A8A199]/50 bg-transparent"
           />
 
           {/* Thanh trạng thái tự động lưu */}
-          <div className="mt-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+          <div className="mt-4 flex items-center justify-between border-t border-[#2B2724]/10 pt-3 text-xs font-sans text-[#7A736B] dark:border-white/10 dark:text-[#A8A199]">
             <div className="flex items-center gap-1.5">
               {status === 'saving' && (
-                <span className="inline-flex items-center gap-1 text-brand-600 dark:text-brand-300">
-                  <span className="inline-block size-2 animate-pulse rounded-full bg-brand-500" />
-                  Đang tự động lưu...
+                <span className="inline-flex items-center gap-1 text-[#2B2724] dark:text-[#EDE8E3]">
+                  <span className="inline-block size-2 animate-ping rounded-full bg-[#F4C6D0]" />
+                  đang cất trang giấy vào ngăn tủ...
                 </span>
               )}
               {status === 'saved' && (
-                <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                  <CloudCheck size={14} />
-                  Đã tự động lưu {lastSavedTime ? `lúc ${lastSavedTime}` : ''}
+                <span className="inline-flex items-center gap-1 text-[#2B2724] dark:text-[#8CC3A0] font-medium">
+                  <CloudCheck size={14} className="text-[#8CC3A0]" />
+                  đã lưu êm đềm {lastSavedTime ? `lúc ${lastSavedTime}` : ''} ✿
                 </span>
               )}
               {status === 'idle' && (
-                <span className="inline-flex items-center gap-1 text-slate-400">
+                <span className="inline-flex items-center gap-1">
                   <Clock size={13} />
-                  Tự động lưu sau 1s ngừng gõ
+                  tự động lưu khi bạn dừng gõ
                 </span>
               )}
             </div>
 
-            {!mood && <span className="text-amber-500">Hãy chọn tâm trạng để kích hoạt lưu</span>}
+            {!mood && <span className="font-serif italic text-[#E08A82]">chọn tâm trạng để bắt đầu</span>}
           </div>
-        </section>
+        </motion.section>
 
-        {/* Nút lưu thủ công */}
+        {/* Nút lưu thủ công dạng Pill Button viền đen nảy lên */}
         <button
           id="save-entry"
           type="submit"
           disabled={!mood || status === 'saving'}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-500 py-3.5 font-semibold text-white shadow-md transition-all hover:bg-brand-600 active:scale-[0.98] disabled:opacity-40"
+          onClick={playPopSound}
+          className="group flex w-full items-center justify-center gap-2 rounded-full border-[1.5px] border-[#2B2724] bg-[#F4C6D0] py-3.5 font-sans text-sm font-medium text-[#2B2724] shadow-[2px_3px_0px_#2B2724] transition-all hover:-translate-y-0.5 hover:shadow-[3px_4px_0px_#2B2724] active:translate-y-0 disabled:opacity-40"
         >
           {status === 'saved' ? (
             <>
-              <Check size={20} /> Đã lưu thành công
+              <Check size={18} /> đã cất giữ trang nhật ký thành công ✿
             </>
           ) : entry ? (
-            'Cập nhật ngay'
+            <>
+              <DoodleFlower size={16} className="transition-transform group-hover:rotate-45" /> cập nhật trang hôm nay ✿
+            </>
           ) : (
-            'Lưu nhật ký'
+            <>
+              <DoodleFlower size={16} className="transition-transform group-hover:rotate-45" /> lưu một chút dịu dàng hôm nay ✿
+            </>
           )}
         </button>
       </div>
