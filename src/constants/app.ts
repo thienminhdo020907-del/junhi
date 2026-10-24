@@ -6,4 +6,6 @@ export const ROUTES = {
   journal: '/nhat-ky',
   stats: '/thong-ke',
   settings: '/cai-dat',
+  login: '/auth/login',
+  register: '/auth/register',
 } as const

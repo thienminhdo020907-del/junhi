@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Layout from '@/components/Layout'
 import { AuthProvider } from '@/context/AuthContext'
 import { ROUTES } from '@/constants/app'
+import AuthPage from '@/pages/AuthPage'
 import CalendarPage from '@/pages/CalendarPage'
 import JournalPage from '@/pages/JournalPage'
 import SettingsPage from '@/pages/SettingsPage'
@@ -16,6 +17,11 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          {/* Trang Đăng nhập / Đăng ký riêng biệt */}
+          <Route path="/auth/login" element={<AuthPage />} />
+          <Route path="/auth/register" element={<AuthPage />} />
+          <Route path="/login" element={<AuthPage />} />
+
           <Route element={<Layout />}>
             <Route index element={<TodayPage />} />
             <Route path={ROUTES.calendar} element={<CalendarPage />} />
