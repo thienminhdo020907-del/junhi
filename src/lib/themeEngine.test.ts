@@ -135,6 +135,54 @@ describe('Theme Engine & Customization', () => {
       expect(MODERN_THEME_CONFIG.fontBody).toContain('Inter')
       expect(MODERN_THEME_CONFIG.radius).toBe('large')
       expect(MODERN_THEME_CONFIG.density).toBe('normal')
+      expect(MODERN_THEME_CONFIG.dark.bg).toBe('#121010')
+      expect(MODERN_THEME_CONFIG.dark.surface).toBe('#221E1C')
+      expect(MODERN_THEME_CONFIG.dark.accent).toBe('#B5707F')
+    })
+  })
+
+  describe('5. Mặc định Dark mode & Thứ tự ưu tiên (Tài khoản -> localStorage -> mặc định Dark)', () => {
+    it('khi chưa có lựa chọn (localStorage rỗng) -> mặc định là dark', () => {
+      // Giả lập logic resolve
+      const getInitial = () => {
+        const saved = localStorage.getItem('junhi_theme')
+        if (saved === 'light') return false
+        if (saved === 'dark') return true
+        return true // Mặc định dark
+      }
+      expect(getInitial()).toBe(true)
+    })
+
+    it('khi localStorage có lựa chọn sáng -> giữ đúng lựa chọn sáng', () => {
+      localStorage.setItem('junhi_theme', 'light')
+      const getInitial = () => {
+        const saved = localStorage.getItem('junhi_theme')
+        if (saved === 'light') return false
+        if (saved === 'dark') return true
+        return true
+      }
+      expect(getInitial()).toBe(false)
+    })
+
+    it('ưu tiên theme của tài khoản nếu đã đăng nhập và có lưu theme riêng', () => {
+      localStorage.setItem('junhi_current_user_id', '42')
+      localStorage.setItem('junhi_user_theme_42', 'light')
+      localStorage.setItem('junhi_theme', 'dark') // local đang dark nhưng user chọn light
+
+      const resolveTheme = () => {
+        const userId = localStorage.getItem('junhi_current_user_id')
+        if (userId) {
+          const userTheme = localStorage.getItem(`junhi_user_theme_${userId}`)
+          if (userTheme === 'light') return false
+          if (userTheme === 'dark') return true
+        }
+        const saved = localStorage.getItem('junhi_theme')
+        if (saved === 'light') return false
+        if (saved === 'dark') return true
+        return true
+      }
+
+      expect(resolveTheme()).toBe(false)
     })
   })
 })

@@ -302,6 +302,8 @@ export default function SettingsPage() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
+                aria-pressed={!isDark}
+                aria-label="Chọn giao diện Kem ấm (Sáng)"
                 onClick={() => handleToggleDark(false)}
                 className={`relative flex items-center gap-2.5 rounded-2xl p-3 text-left transition-all bg-[var(--surface-2)] ${
                   !isDark
@@ -323,6 +325,8 @@ export default function SettingsPage() {
 
               <button
                 type="button"
+                aria-pressed={isDark}
+                aria-label="Chọn giao diện Đêm ấm (Tối)"
                 onClick={() => handleToggleDark(true)}
                 className={`relative flex items-center gap-2.5 rounded-2xl p-3 text-left transition-all bg-[var(--surface-2)] ${
                   isDark

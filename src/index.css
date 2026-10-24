@@ -95,21 +95,21 @@
 }
 
 [data-theme="dark"], .dark {
-  /* Giá trị chuẩn Dark mode theo yêu cầu:
-     --bg #1A1715, --surface #26221F, --surface-2 #302B27
+  /* Giá trị chuẩn Dark mode:
+     --bg #121010 (nền gần đen ấm), --surface #221E1C (thẻ nâu đen), --surface-2 #2C2724
      --text #F5F2EC (trắng ngà), --text-muted #B8AFA4, placeholder rgba(245,242,236,0.5)
-     --border rgba(255,255,255,0.14) */
-  --bg: #1A1715;
-  --surface: #26221F;
-  --surface-2: #302B27;
+     --border rgba(255,255,255,0.14), --accent #B5707F (hồng đất nút chính) */
+  --bg: #121010;
+  --surface: #221E1C;
+  --surface-2: #2C2724;
   --text: #F5F2EC;
   --text-muted: #B8AFA4;
   --placeholder: rgba(245, 242, 236, 0.5);
   --border: rgba(255, 255, 255, 0.14);
   --border-strong: rgba(255, 255, 255, 0.35);
 
-  --accent: #D98A96;
-  --accent-contrast: #2B2724; /* Chữ trên nền chip/nút pastel sáng giữ màu tối để đọc rõ */
+  --accent: #B5707F;
+  --accent-contrast: #F5F2EC;
   --success: #4ADE80;
   --danger: #F87171;
 
@@ -126,7 +126,7 @@
   --mood-3: #9E8955;
   --mood-4: #577767;
   --mood-5: #477759;
-  --empty-cell: #302B27;
+  --empty-cell: #2C2724;
 
   /* Màu biểu đồ (Dark) */
   --chart-1: #9D8FF7;

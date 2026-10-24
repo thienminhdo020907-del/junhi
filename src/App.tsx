@@ -16,31 +16,31 @@ const StatsPage = lazy(() => import('@/pages/StatsPage'))
 export default function App() {
   return (
     <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
-        <Routes>
-          {/* Trang Đăng nhập / Đăng ký riêng biệt */}
-          <Route path="/auth/login" element={<AuthPage />} />
-          <Route path="/auth/register" element={<AuthPage />} />
-          <Route path="/login" element={<AuthPage />} />
+      <AuthProvider>
+        <ThemeProvider>
+          <Routes>
+            {/* Trang Đăng nhập / Đăng ký riêng biệt */}
+            <Route path="/auth/login" element={<AuthPage />} />
+            <Route path="/auth/register" element={<AuthPage />} />
+            <Route path="/login" element={<AuthPage />} />
 
-          <Route element={<Layout />}>
-            <Route index element={<TodayPage />} />
-            <Route path={ROUTES.calendar} element={<CalendarPage />} />
-            <Route path={ROUTES.journal} element={<JournalPage />} />
-            <Route
-              path={ROUTES.stats}
-              element={
-                <Suspense fallback={null}>
-                  <StatsPage />
-                </Suspense>
-              }
-            />
-            <Route path={ROUTES.settings} element={<SettingsPage />} />
-          </Route>
-        </Routes>
+            <Route element={<Layout />}>
+              <Route index element={<TodayPage />} />
+              <Route path={ROUTES.calendar} element={<CalendarPage />} />
+              <Route path={ROUTES.journal} element={<JournalPage />} />
+              <Route
+                path={ROUTES.stats}
+                element={
+                  <Suspense fallback={null}>
+                    <StatsPage />
+                  </Suspense>
+                }
+              />
+              <Route path={ROUTES.settings} element={<SettingsPage />} />
+            </Route>
+          </Routes>
+        </ThemeProvider>
       </AuthProvider>
-      </ThemeProvider>
     </BrowserRouter>
   )
 }

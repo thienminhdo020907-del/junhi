@@ -3,19 +3,16 @@ import { Link, NavLink } from 'react-router-dom'
 import { Volume2, VolumeX, Sun, Moon, Cloud, CloudCheck } from 'lucide-react'
 import { ROUTES } from '@/constants/app'
 import { useAuth } from '@/context/useAuth'
+import { useTheme } from '@/context/useTheme'
 import { isSoundEnabled, setSoundEnabled, playPopSound } from '@/lib/sound'
 
 export default function CozyHeader() {
   const { user } = useAuth()
+  const { isDark, setIsDark } = useTheme()
   const [soundOn, setSoundOn] = useState(false)
-  const [isDark, setIsDark] = useState(false)
 
   useEffect(() => {
     setSoundOn(isSoundEnabled())
-    const isDarkMode = document.documentElement.classList.contains('dark') || 
-      document.body.getAttribute('data-theme') === 'dark' ||
-      localStorage.getItem('junhi_theme') === 'dark'
-    setIsDark(isDarkMode)
   }, [])
 
   const toggleSound = () => {
@@ -26,24 +23,7 @@ export default function CozyHeader() {
 
   const toggleTheme = () => {
     playPopSound()
-    const next = !isDark
-    setIsDark(next)
-    const metaTheme = document.querySelector('meta[name="theme-color"]')
-    if (next) {
-      document.documentElement.classList.add('dark')
-      document.documentElement.setAttribute('data-theme', 'dark')
-      document.body.classList.add('dark')
-      document.body.setAttribute('data-theme', 'dark')
-      if (metaTheme) metaTheme.setAttribute('content', '#1F1C1A')
-      localStorage.setItem('junhi_theme', 'dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-      document.documentElement.setAttribute('data-theme', 'light')
-      document.body.classList.remove('dark')
-      document.body.setAttribute('data-theme', 'light')
-      if (metaTheme) metaTheme.setAttribute('content', '#F3F1EC')
-      localStorage.setItem('junhi_theme', 'light')
-    }
+    setIsDark(!isDark)
   }
 
   return (
@@ -120,6 +100,8 @@ export default function CozyHeader() {
             type="button"
             onClick={toggleTheme}
             id="theme-toggle-btn"
+            aria-label={isDark ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'}
+            aria-pressed={isDark}
             title={isDark ? 'Chuyển sang nền kem ấm' : 'Chuyển sang đêm tĩnh lặng'}
             className="flex size-7 items-center justify-center rounded-full border-[1.5px] border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:border-[var(--border-strong)] hover:shadow-[1.5px_2px_0px_var(--border-strong)] transition-all"
           >

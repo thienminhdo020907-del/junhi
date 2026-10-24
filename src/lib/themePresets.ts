@@ -93,15 +93,15 @@ export const DEFAULT_LIGHT_COLORS: ThemeColors = {
 }
 
 export const DEFAULT_DARK_COLORS: ThemeColors = {
-  bg: '#1A1715',
-  surface: '#26221F',
-  surface2: '#302B27',
+  bg: '#121010',
+  surface: '#221E1C',
+  surface2: '#2C2724',
   text: '#F5F2EC',
   textMuted: '#B8AFA4',
   border: 'rgba(255, 255, 255, 0.14)',
   borderStrong: 'rgba(255, 255, 255, 0.35)',
-  accent: '#D98A96',
-  accentContrast: '#2B2724',
+  accent: '#B5707F',
+  accentContrast: '#F5F2EC',
   mood: ['#A6524A', '#AA6E44', '#9E8955', '#577767', '#477759'],
   chart: ['#9D8FF7', '#4ADE80', '#FBBF24', '#F87171', '#38BDF8'],
 }

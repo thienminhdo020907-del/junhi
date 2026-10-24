@@ -19,24 +19,41 @@ import {
   WIN95_THEME_CONFIG,
 } from '@/lib/themePresets'
 import { BODY_FONTS, HEADING_FONTS, loadFontOnDemand } from '@/lib/fontLoader'
+import { useAuth } from '@/context/useAuth'
 import { ThemeContext, type ThemeMode } from './theme-context-definition'
 
 const THEME_MODE_KEY = 'junhi_theme_mode'
 const DARK_THEME_KEY = 'junhi_theme'
 
+function resolveInitialDark(): boolean {
+  if (typeof localStorage === 'undefined') return true
+  try {
+    const currentUserId = localStorage.getItem('junhi_current_user_id')
+    if (currentUserId) {
+      const userTheme = localStorage.getItem(`junhi_user_theme_${currentUserId}`)
+      if (userTheme === 'dark') return true
+      if (userTheme === 'light') return false
+    }
+    const saved = localStorage.getItem(DARK_THEME_KEY)
+    if (saved === 'dark') return true
+    if (saved === 'light') return false
+  } catch {
+    // fallback
+  }
+  // Mặc định dark khi người dùng vào lần đầu (KHÔNG theo prefers-color-scheme)
+  return true
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth()
+
   const [theme, setThemeState] = useState<ThemeMode>(() => {
     const saved = localStorage.getItem(THEME_MODE_KEY)
     if (saved === 'win95' || saved === 'custom') return saved
     return 'modern'
   })
 
-  const [isDark, setIsDarkState] = useState<boolean>(() => {
-    if (typeof localStorage === 'undefined') return false
-    const saved = localStorage.getItem(DARK_THEME_KEY)
-    if (saved) return saved === 'dark'
-    return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
-  })
+  const [isDark, setIsDarkState] = useState<boolean>(resolveInitialDark)
 
   const [customConfig, setCustomConfigState] = useState<CustomThemeConfig>(() => {
     return loadCurrentThemeConfig()
@@ -69,20 +86,39 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const setIsDark = useCallback((dark: boolean) => {
     setIsDarkState(dark)
     localStorage.setItem(DARK_THEME_KEY, dark ? 'dark' : 'light')
+    const currentUserId = localStorage.getItem('junhi_current_user_id')
+    if (currentUserId) {
+      localStorage.setItem(`junhi_user_theme_${currentUserId}`, dark ? 'dark' : 'light')
+    }
     const root = document.documentElement
     const body = document.body
+    const metaTheme = document.querySelector('meta[name="theme-color"]')
     if (dark) {
       root.classList.add('dark')
       root.setAttribute('data-theme', 'dark')
       body.classList.add('dark')
       body.setAttribute('data-theme', 'dark')
+      if (metaTheme) metaTheme.setAttribute('content', '#121010')
     } else {
       root.classList.remove('dark')
       root.setAttribute('data-theme', 'light')
       body.classList.remove('dark')
       body.setAttribute('data-theme', 'light')
+      if (metaTheme) metaTheme.setAttribute('content', '#F3F1EC')
     }
   }, [])
+
+  // Khi tài khoản đăng nhập và có lưu theme riêng: ưu tiên áp dụng theme tài khoản
+  useEffect(() => {
+    if (user?.id) {
+      const userTheme = localStorage.getItem(`junhi_user_theme_${user.id}`)
+      if (userTheme === 'dark') {
+        setIsDark(true)
+      } else if (userTheme === 'light') {
+        setIsDark(false)
+      }
+    }
+  }, [user?.id, setIsDark])
 
   // Apply to DOM immediately
   useEffect(() => {
