@@ -1,0 +1,34 @@
+-- Junhi Database Schema for MySQL
+-- Tương thích với MySQL 8.0+, TiDB Cloud, Aiven, Railway, PlanetScale
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS entries (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  date VARCHAR(10) NOT NULL,
+  mood TINYINT NOT NULL,
+  energy TINYINT NOT NULL,
+  sleep_hours DECIMAL(4,2) NOT NULL,
+  tags JSON,
+  content TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_user_date (user_id, date),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS user_settings (
+  user_id INT PRIMARY KEY,
+  reminder_enabled BOOLEAN DEFAULT FALSE,
+  reminder_time VARCHAR(5) DEFAULT '21:00',
+  timezone VARCHAR(50) DEFAULT 'Asia/Ho_Chi_Minh',
+  last_notified_date VARCHAR(10) DEFAULT '',
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

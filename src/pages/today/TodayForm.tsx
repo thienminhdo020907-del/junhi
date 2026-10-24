@@ -3,6 +3,7 @@ import { Check, Clock, CloudCheck, Sparkles } from 'lucide-react'
 import SleepClock from '@/components/SleepClock'
 import type { Energy, Entry } from '@/db/db'
 import { saveEntry } from '@/db/saveEntry'
+import { getStoredToken, syncUpload } from '@/lib/api'
 import { EMOTION_TAGS, ENERGY_LABEL } from '@/constants/entry'
 import { MOOD_EMOJI, MOOD_LABEL, MOODS, moodColor, type Mood } from '@/lib/mood'
 
@@ -57,6 +58,20 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
           second: '2-digit',
         }).format(new Date()),
       )
+
+      // Nếu đã đăng nhập, tự động đồng bộ ngầm lên MySQL
+      if (getStoredToken()) {
+        syncUpload([
+          {
+            date,
+            mood: currentMood,
+            energy: currentEnergy ?? 3,
+            sleepHours: hours !== null && Number.isFinite(hours) ? hours : 8,
+            tags: currentTags,
+            content: currentContent.trim(),
+          },
+        ]).catch(() => {})
+      }
     },
     [date],
   )

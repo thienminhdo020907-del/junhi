@@ -1,24 +1,33 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   BellRing,
   Check,
+  Cloud,
+  CloudCheck,
+  Database,
   Download,
   FileDown,
   FileUp,
   Info,
   KeyRound,
   Lock,
+  LogOut,
+  Mail,
+  RefreshCw,
   Shield,
   ShieldCheck,
   Smartphone,
   Trash2,
   Volume2,
 } from 'lucide-react'
+import AuthModal from '@/components/AuthModal'
 import PageHeader from '@/components/PageHeader'
 import PinSetupModal from '@/components/PinSetupModal'
+import { useAuth } from '@/context/useAuth'
 import { useInstallPrompt } from '@/hooks/useInstallPrompt'
 import { usePinLock } from '@/db/usePinLock'
 import { useReminder } from '@/db/useReminder'
+import { authGetMe, updateCloudReminder } from '@/lib/api'
 import { exportBackup, importBackup } from '@/lib/backup'
 import {
   getPermission,
@@ -34,6 +43,58 @@ export default function SettingsPage() {
   const [permission, setPermission] = useState<PermissionState>(getPermission)
   const [testSent, setTestSent] = useState(false)
   const { canInstall, installed, install, isIos } = useInstallPrompt()
+
+  // Cloud Auth & Sync
+  const { user, isSyncing, lastSyncedAt, syncData, logout } = useAuth()
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [syncFeedback, setSyncFeedback] = useState<string | null>(null)
+  const [emailReminderEnabled, setEmailReminderEnabled] = useState(false)
+  const [emailReminderTime, setEmailReminderTime] = useState('21:00')
+
+  // Lấy cài đặt nhắc nhở email từ cloud nếu đã đăng nhập
+  useEffect(() => {
+    if (user) {
+      authGetMe().then((res) => {
+        if (res.settings) {
+          setEmailReminderEnabled(res.settings.reminderEnabled)
+          setEmailReminderTime(res.settings.reminderTime)
+        }
+      }).catch(() => {})
+    }
+  }, [user])
+
+  const handleToggleEmailReminder = async () => {
+    const nextVal = !emailReminderEnabled
+    setEmailReminderEnabled(nextVal)
+    try {
+      await updateCloudReminder(nextVal, emailReminderTime)
+    } catch {
+      setEmailReminderEnabled(!nextVal)
+      alert('Không thể lưu cài đặt nhắc email lên máy chủ')
+    }
+  }
+
+  const handleChangeEmailTime = async (time: string) => {
+    setEmailReminderTime(time)
+    try {
+      await updateCloudReminder(emailReminderEnabled, time)
+    } catch {
+      // bỏ qua
+    }
+  }
+
+  const handleManualSync = async () => {
+    try {
+      setSyncFeedback('Đang đồng bộ...')
+      const res = await syncData()
+      setSyncFeedback(`Thành công! Đã tải về ${res.downloaded} bài, tải lên ${res.uploaded} bài.`)
+      setTimeout(() => setSyncFeedback(null), 4000)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Lỗi đồng bộ'
+      setSyncFeedback(`Thất bại: ${msg}`)
+      setTimeout(() => setSyncFeedback(null), 4000)
+    }
+  }
 
   // Bảo mật PIN
   const { isPinEnabled, removePin } = usePinLock()
@@ -119,9 +180,127 @@ export default function SettingsPage() {
 
   return (
     <>
-      <PageHeader title="Cài đặt" subtitle="Tuỳ chỉnh nhắc nhở, bảo mật & sao lưu" />
+      <PageHeader title="Cài đặt" subtitle="Tuỳ chỉnh đám mây, nhắc nhở & bảo mật" />
 
       <div className="max-w-2xl space-y-5">
+        {/* Mục Tài khoản & Đồng bộ đám mây (MySQL Backend) */}
+        <section className="card space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-brand-100 text-brand-600 dark:bg-white/10 dark:text-brand-300">
+              <Database size={20} />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-base font-semibold">Tài khoản & Đồng bộ đám mây (MySQL)</h2>
+              <p className={muted}>Đồng bộ nhật ký giữa các thiết bị và nhận email nhắc nhở</p>
+            </div>
+            {user ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-600 ring-1 ring-emerald-500/20 dark:bg-emerald-950/40 dark:text-emerald-400">
+                <CloudCheck size={14} /> Đã kết nối
+              </span>
+            ) : (
+              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500 dark:bg-white/10 dark:text-slate-400">
+                Chưa đăng nhập
+              </span>
+            )}
+          </div>
+
+          {user ? (
+            <div className="space-y-3.5 pt-1">
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-brand-50/50 p-3 dark:bg-white/5">
+                <div>
+                  <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{user.email}</p>
+                  <p className="text-[11px] text-slate-400">
+                    {lastSyncedAt
+                      ? `Đồng bộ lần cuối: ${lastSyncedAt.toLocaleTimeString('vi-VN')} ${lastSyncedAt.toLocaleDateString('vi-VN')}`
+                      : 'Chưa đồng bộ trong phiên này'}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={isSyncing}
+                    onClick={handleManualSync}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-brand-500 px-3 py-1.5 text-xs font-semibold text-white shadow-2xs hover:bg-brand-600 disabled:opacity-50 active:scale-95"
+                  >
+                    <RefreshCw size={13} className={isSyncing ? 'animate-spin' : ''} />
+                    {isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ ngay'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className="inline-flex items-center gap-1 rounded-xl border border-rose-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-rose-600 shadow-2xs hover:bg-rose-50 active:scale-95 dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-400"
+                  >
+                    <LogOut size={13} /> Đăng xuất
+                  </button>
+                </div>
+              </div>
+
+              {syncFeedback && (
+                <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                  {syncFeedback}
+                </p>
+              )}
+
+              {/* Tùy chọn Nhận email nhắc hằng ngày */}
+              <div className="rounded-2xl border border-brand-100 p-3.5 space-y-3 dark:border-white/10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Mail size={16} className="text-brand-500" />
+                    <div>
+                      <p className="text-xs font-semibold">Gửi email nhắc nhở hằng ngày</p>
+                      <p className="text-[11px] text-slate-400">Tự động gửi email vào hộp thư của bạn qua Cron</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={emailReminderEnabled}
+                    onClick={handleToggleEmailReminder}
+                    className={`relative h-6 w-11 rounded-full transition-colors ${
+                      emailReminderEnabled ? 'bg-brand-500' : 'bg-slate-300 dark:bg-white/20'
+                    }`}
+                  >
+                    <span
+                      className={`absolute top-0.5 left-0.5 size-5 rounded-full bg-white shadow transition-transform ${
+                        emailReminderEnabled ? 'translate-x-5' : ''
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {emailReminderEnabled && (
+                  <div className="flex items-center justify-between pt-1 border-t border-brand-50 dark:border-white/5">
+                    <label htmlFor="email-reminder-time" className="text-xs text-slate-600 dark:text-slate-300">
+                      Giờ gửi email
+                    </label>
+                    <input
+                      id="email-reminder-time"
+                      type="time"
+                      value={emailReminderTime}
+                      onChange={(e) => handleChangeEmailTime(e.target.value)}
+                      className="rounded-lg border border-brand-200 bg-white px-2.5 py-1 text-xs font-semibold outline-none dark:border-white/20 dark:bg-white/10"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3 pt-1">
+              <p className="text-xs text-slate-600 dark:text-slate-300">
+                Khi chưa đăng nhập, dữ liệu của bạn được lưu cục bộ an toàn trong IndexedDB của máy. Đăng nhập để tự động lưu vào MySQL và truy cập từ mọi thiết bị.
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsAuthModalOpen(true)}
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-4 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-brand-600 active:scale-95"
+              >
+                <Cloud size={15} /> Đăng nhập / Đăng ký tài khoản
+              </button>
+            </div>
+          )}
+        </section>
         {/* Mục Bảo mật & Khóa mã PIN */}
         <section className="card space-y-4">
           <div className="flex items-center gap-3">
@@ -379,6 +558,11 @@ export default function SettingsPage() {
           setPinSuccessMsg('Đã thiết lập mã PIN thành công!')
           setTimeout(() => setPinSuccessMsg(''), 3000)
         }}
+      />
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
       />
     </>
   )
