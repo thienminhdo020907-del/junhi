@@ -8,7 +8,7 @@ export interface AuthContextType {
   lastSyncedAt: Date | null
   login: (email: string, pass: string) => Promise<void>
   register: (email: string, pass: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
   syncData: () => Promise<{ uploaded: number; downloaded: number }>
 }
 

@@ -231,7 +231,11 @@ export default function SettingsPage() {
 
                   <button
                     type="button"
-                    onClick={logout}
+                    onClick={async () => {
+                      if (window.confirm('Bạn có chắc muốn đăng xuất? Dữ liệu của bạn đã được lưu an toàn trên đám mây.')) {
+                        await logout()
+                      }
+                    }}
                     className="inline-flex items-center gap-1 rounded-xl border border-rose-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-rose-600 shadow-2xs hover:bg-rose-50 active:scale-95 dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-400"
                   >
                     <LogOut size={13} /> Đăng xuất

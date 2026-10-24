@@ -16,8 +16,13 @@ export default function TodayPage() {
         title="Hôm nay"
         subtitle={`${formatFullDate(now)}${entry ? ' · đang chỉnh sửa' : ''}`}
       />
-      {/* Chờ đọc DB xong để form khởi tạo đúng dữ liệu đã lưu */}
-      {entries && <TodayForm date={key} entry={entry} />}
+      {entries && (
+        <TodayForm
+          key={`${key}-${entry?.id ?? 'empty'}-${entry?.updatedAt ?? 0}`}
+          date={key}
+          entry={entry}
+        />
+      )}
     </>
   )
 }
