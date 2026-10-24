@@ -52,6 +52,7 @@
   --accent-contrast: #2B2724;
   --success: #16A34A;
   --danger: #DC2626;
+  --accent-butter: var(--pastel-butter);
 
   /* Màu Pastel (Light) */
   --pastel-pink: #F4C6D0;

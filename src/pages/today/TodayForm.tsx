@@ -6,7 +6,8 @@ import SleepClock from '@/components/SleepClock'
 import type { Energy, Entry } from '@/db/db'
 import { saveEntry } from '@/db/saveEntry'
 import { getStoredToken, syncUpload } from '@/lib/api'
-import { EMOTION_TAGS, ENERGY_LABEL } from '@/constants/entry'
+import { ENERGY_LABEL } from '@/constants/entry'
+import TagPicker from '@/components/TagPicker'
 import { MOOD_LABEL, MOODS, moodColor, type Mood } from '@/lib/mood'
 import { COZY_SPRING } from '@/constants/tokens'
 import { playPopSound, playChimeSound } from '@/lib/sound'
@@ -43,6 +44,11 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
     playPopSound()
     markDirty()
     setTags((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]))
+  }
+
+  const selectTag = (t: string) => {
+    markDirty()
+    setTags((cur) => (cur.includes(t) ? cur : [...cur, t]))
   }
 
   const handleMoodSelect = (m: Mood) => {
@@ -241,26 +247,7 @@ export default function TodayForm({ date, entry }: { date: string; entry?: Entry
             </span>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {EMOTION_TAGS.map((t) => {
-              const on = tags.includes(t)
-              return (
-                <button
-                  key={t}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={() => toggleTag(t)}
-                  className={`rounded-full border-[1.5px] px-3.5 py-1.5 text-xs sm:text-sm font-sans transition-all hover:-translate-y-0.5 ${
-                    on
-                      ? 'border-[var(--border-strong)] bg-[var(--pastel-mint)] text-[var(--text)] font-medium shadow-[1.5px_2px_0px_var(--border-strong)]'
-                      : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]'
-                  }`}
-                >
-                  {t}
-                </button>
-              )
-            })}
-          </div>
+          <TagPicker selected={tags} onToggle={toggleTag} onSelect={selectTag} />
         </section>
 
         {/* Mức năng lượng */}
