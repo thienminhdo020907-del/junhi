@@ -1,5 +1,7 @@
 import { useState, type ReactNode } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { ROUTES } from '@/constants/app'
+import { useAuth } from '@/context/useAuth'
 import { useTheme } from '@/context/useTheme'
 import { Sparkles, Palette } from 'lucide-react'
 
