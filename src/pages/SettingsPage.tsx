@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   BellRing,
   Check,
@@ -23,6 +24,7 @@ import {
 import AuthModal from '@/components/AuthModal'
 import PageHeader from '@/components/PageHeader'
 import PinSetupModal from '@/components/PinSetupModal'
+import { ROUTES } from '@/constants/app'
 import { useAuth } from '@/context/useAuth'
 import { useInstallPrompt } from '@/hooks/useInstallPrompt'
 import { usePinLock } from '@/db/usePinLock'
@@ -291,13 +293,20 @@ export default function SettingsPage() {
               <p className="text-xs text-slate-600 dark:text-slate-300">
                 Khi chưa đăng nhập, dữ liệu của bạn được lưu cục bộ an toàn trong IndexedDB của máy. Đăng nhập để tự động lưu vào MySQL và truy cập từ mọi thiết bị.
               </p>
-              <button
-                type="button"
-                onClick={() => setIsAuthModalOpen(true)}
-                className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-4 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-brand-600 active:scale-95"
-              >
-                <Cloud size={15} /> Đăng nhập / Đăng ký tài khoản
-              </button>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <Link
+                  to={ROUTES.login}
+                  className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-4 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-brand-600 active:scale-95"
+                >
+                  <Cloud size={15} /> Đăng nhập tài khoản
+                </Link>
+                <Link
+                  to={ROUTES.register}
+                  className="inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-white px-4 py-2 text-xs font-semibold text-brand-700 shadow-2xs hover:bg-brand-50 active:scale-95 dark:border-white/15 dark:bg-white/10 dark:text-brand-200 dark:hover:bg-white/15"
+                >
+                  Tạo tài khoản mới
+                </Link>
+              </div>
             </div>
           )}
         </section>

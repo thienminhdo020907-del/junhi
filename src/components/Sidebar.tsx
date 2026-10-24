@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { Cloud, CloudCheck, LogOut, RefreshCw } from 'lucide-react'
-import AuthModal from '@/components/AuthModal'
 import { APP_NAME, ROUTES } from '@/constants/app'
 import { NAV_ITEMS } from '@/constants/nav'
 import { useAuth } from '@/context/useAuth'
@@ -11,7 +10,6 @@ import { useAuth } from '@/context/useAuth'
  */
 export default function Sidebar() {
   const { user, isSyncing, syncData, logout } = useAuth()
-  const [isAuthOpen, setIsAuthOpen] = useState(false)
   const [syncStatus, setSyncStatus] = useState<string | null>(null)
 
   const handleManualSync = async () => {
@@ -101,15 +99,14 @@ export default function Sidebar() {
               )}
             </div>
           ) : (
-            <button
-              type="button"
-              onClick={() => setIsAuthOpen(true)}
+            <Link
+              to={ROUTES.login}
               className="flex w-full items-center gap-2 rounded-xl border border-brand-200 bg-white px-2.5 py-2 text-xs font-semibold text-brand-700 shadow-2xs hover:bg-brand-50 active:scale-95 dark:border-white/15 dark:bg-white/10 dark:text-brand-200 dark:hover:bg-white/15 max-lg:justify-center"
               title="Đăng nhập để đồng bộ đám mây"
             >
               <Cloud size={15} className="shrink-0 text-brand-500" />
-              <span className="max-lg:hidden text-[11px]">Đăng nhập đồng bộ</span>
-            </button>
+              <span className="max-lg:hidden text-[11px]">Đăng nhập / Đăng ký</span>
+            </Link>
           )}
 
           <button
@@ -123,8 +120,6 @@ export default function Sidebar() {
           </button>
         </div>
       </aside>
-
-      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </>
   )
 }
