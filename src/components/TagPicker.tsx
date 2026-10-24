@@ -160,7 +160,7 @@ export default function TagPicker({ selected, onToggle, onSelect }: Props) {
                 void commit()
               }}
               onKeyDown={onFormKeyDown}
-              className="inline-flex items-center gap-1 rounded-full border-[1.5px] border-[var(--border-strong)] bg-[var(--surface)] py-1 pr-1 pl-3.5 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--accent)]"
+              className="inline-flex items-center gap-1 rounded-full border-[1.5px] border-[var(--border-strong)] bg-[var(--surface)] py-1 pr-1 pl-3.5 transition-all focus-within:border-[var(--accent)] focus-within:ring-2 focus-within:ring-[var(--accent)]/30 focus-within:shadow-[0_0_0_1px_var(--accent)]"
             >
               <label htmlFor={inputId} className="sr-only">
                 Cảm xúc của bạn
@@ -176,7 +176,14 @@ export default function TagPicker({ selected, onToggle, onSelect }: Props) {
                   setDraft(e.target.value)
                   setMessage(null)
                 }}
-                className="h-5 w-32 bg-transparent text-xs text-[var(--text)] outline-none placeholder:text-[var(--placeholder)] sm:w-36 sm:text-sm"
+                className="h-5 w-32 border-0 border-none outline-none ring-0 shadow-none bg-transparent p-0 text-xs sm:text-sm text-[var(--text)] placeholder:text-[var(--placeholder)] sm:w-36 leading-tight rounded-none focus:outline-none focus:ring-0 focus:border-0 focus-visible:outline-none focus-visible:ring-0"
+                style={{
+                  border: 'none',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  background: 'transparent',
+                  borderRadius: 0,
+                }}
               />
               {draft.length >= COUNTER_FROM && (
                 <span
